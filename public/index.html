@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kasir - Toko Bangunangdfgdfg</title>
+  <script type="module" src="/js/app-index.js" defer></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/xlsx.full.min.js"></script>
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+  <!-- Navbar -->
+  <!-- <nav class="bg-white shadow-md py-4 mb-8">
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
+      <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
+      <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
+      <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
+      <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
+      <a href="profit-harian.html" class="text-blue-600 font-semibold hover:underline">Profit Harian</a>
+      <a href="profit-bulanan.html" class="text-blue-600 font-semibold hover:underline">Profit Bulanan</a>
+      <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
+    </div>
+  </nav> -->
+  <div class="max-w-4xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Transaksi Kasir</h1>
+
+    <!-- Form Penjualan -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <form id="formTransaksi" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium">Pilih Barang</label>
+          <select id="pilihBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+            <option value="">-- Pilih Barang --</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Jumlah</label>
+          <input type="number" id="jumlahBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+        </div>
+        <div class="md:col-span-2">
+          <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+            Simpan Transaksi
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <!-- Daftar Transaksi Hari Ini -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Transaksi Hari Ini</h2>
+      <table class="w-full table-auto border">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2 text-left">Waktu</th>
+            <th class="px-4 py-2 text-left">Barang</th>
+            <th class="px-4 py-2 text-left">Jumlah</th>
+            <th class="px-4 py-2 text-left">Total</th>
+          </tr>
+        </thead>
+        <tbody id="daftarTransaksi"></tbody>
+      </table>
+    </div>
+  </div>
+</body>
+</html>

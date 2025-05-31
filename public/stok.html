@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stok Barang</title>
+  <script type="module" src="/js/app-stok.js" defer></script>
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+  <div class="max-w-5xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Manajemen Stok Barang</h1>
+
+    <!-- Form Tambah Stok Masuk -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <h2 class="text-xl font-semibold mb-4">Tambah Stok Masuk</h2>
+      <form id="formStokMasuk" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <select id="pilihBarang" class="border-gray-300 rounded-md shadow-sm" required>
+          <option value="">-- Pilih Barang --</option>
+        </select>
+        <input type="number" id="jumlahMasuk" placeholder="Jumlah" class="border-gray-300 rounded-md shadow-sm" required>
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah</button>
+      </form>
+    </div>
+
+    <!-- Daftar Barang Masuk Hari Ini -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Barang Masuk Hari Ini</h2>
+      <ul id="daftarStokMasuk" class="space-y-2 text-gray-700"></ul>
+    </div>
+  </div>
+</body>
+</html>

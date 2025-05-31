@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pengeluaran Harian</title>
+  <script type="module" src="/js/app-pengeluaran.js" defer></script>
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+  <div class="max-w-3xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Catat Pengeluaran Harian</h1>
+
+    <!-- Form Pengeluaran -->
+    <div class="bg-white rounded-lg shadow p-6 mb-8">
+      <form id="formPengeluaran" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <input type="text" id="deskripsiPengeluaran" placeholder="Deskripsi" class="border-gray-300 rounded-md shadow-sm" required>
+        <input type="number" id="jumlahPengeluaran" placeholder="Jumlah (Rp)" class="border-gray-300 rounded-md shadow-sm" required>
+        <button type="submit" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Simpan</button>
+      </form>
+    </div>
+
+    <!-- Daftar Pengeluaran Hari Ini -->
+    <div class="bg-white rounded-lg shadow p-6">
+      <h2 class="text-xl font-semibold mb-4">Pengeluaran Hari Ini</h2>
+      <ul id="daftarPengeluaran" class="space-y-2 text-gray-700"></ul>
+    </div>
+  </div>
+</body>
+</html>

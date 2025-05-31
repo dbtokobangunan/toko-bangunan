@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Penjualan</title>
+  <script type="module" src="/js/app-penjualan.js" defer></script>
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/xlsx.full.min.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900 font-sans">
+  <div class="max-w-6xl mx-auto py-10 px-4">
+    <h1 class="text-3xl font-bold mb-6 text-center">Laporan Penjualan</h1>
+
+    <!-- Filter Jenis Laporan dan Tanggal -->
+    <div class="mb-6 flex flex-col md:flex-row md:items-end gap-4">
+      <div>
+        <label class="block text-sm font-medium">Jenis Laporan</label>
+        <select id="jenisLaporan" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+          <option value="harian">Harian</option>
+          <option value="mingguan">Mingguan</option>
+          <option value="bulanan">Bulanan</option>
+          <option value="tahunan">Tahunan</option>
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Tanggal Acuan</label>
+        <input type="date" id="tanggalFilter" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+      </div>
+      <div>
+        <button onclick="tampilkanLaporan()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 mt-6 md:mt-0">
+          Tampilkan
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabel Penjualan -->
+    <div class="bg-white rounded-lg shadow p-4 overflow-auto">
+      <table class="w-full table-auto border text-sm">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="px-4 py-2 text-left">Tanggal</th>
+            <th class="px-4 py-2 text-left">Barang</th>
+            <th class="px-4 py-2 text-left">Jumlah</th>
+            <th class="px-4 py-2 text-left">Harga</th>
+            <th class="px-4 py-2 text-left">Total</th>
+          </tr>
+        </thead>
+        <tbody id="tabelPenjualan"></tbody>
+      </table>
+    </div>
+
+    <div class="mt-4">
+      <button id="btnExport" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 hidden">
+        Download Excel
+      </button>
+    </div>
+  </div>
+</body>
+</html>
