@@ -5,7 +5,8 @@ import {
   addDoc,
   updateDoc,
   doc,
-  getDoc
+  getDoc,
+  Timestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const formTransaksi = document.getElementById("formTransaksi");
@@ -48,21 +49,23 @@ async function tampilkanTransaksiHariIni() {
 
   querySnapshot.forEach(docSnap => {
     const data = docSnap.data();
-    const tgl = data.timestamp?.toDate();
-    if (tgl >= today && tgl < besok) {
+    const tgl = data.timestamp?.toDate?.();
+
+    if (tgl && tgl >= today && tgl < besok) {
       adaData = true;
+
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="px-4 py-2">${tgl.toLocaleString()}</td>
-        <td class="px-4 py-2">${data.nama}</td>
-        <td class="px-4 py-2">${data.qty}</td>
+        <td class="px-4 py-2">${data.namaBarang || '-'}</td>
+        <td class="px-4 py-2">${data.jumlah ?? 0}</td>
         <td class="px-4 py-2">${formatRupiah(data.total)}</td>`;
       daftarTransaksi.appendChild(tr);
 
       dataExport.push({
-        Tanggal: tgl.toLocaleString(),
-        Barang: data.nama,
-        Jumlah: data.qty,
+        Waktu: tgl.toLocaleString(),
+        Barang: data.namaBarang || '-',
+        Jumlah: data.jumlah ?? 0,
         Total: data.total
       });
     }
@@ -80,9 +83,9 @@ async function tampilkanTransaksiHariIni() {
 formTransaksi.addEventListener("submit", async (e) => {
   e.preventDefault();
   const barangId = selectBarang.value;
-  const qty = parseInt(document.getElementById("jumlahBarang").value);
+  const jumlah = parseInt(document.getElementById("jumlahBarang").value);
 
-  if (!barangId || isNaN(qty) || qty <= 0) {
+  if (!barangId || isNaN(jumlah) || jumlah <= 0) {
     alert("Silakan pilih barang dan isi jumlah dengan benar.");
     return;
   }
@@ -96,24 +99,24 @@ formTransaksi.addEventListener("submit", async (e) => {
   }
 
   const barang = barangSnap.data();
-  if (qty > barang.stok) {
+  if (jumlah > barang.stok) {
     alert("Stok tidak cukup.");
     return;
   }
 
-  const total = qty * barang.harga;
+  const total = jumlah * barang.harga;
 
   await addDoc(collection(db, "penjualan"), {
     barangId,
-    nama: barang.nama,
-    qty,
+    namaBarang: barang.nama,  // ✅ SIMPAN namaBarang
+    jumlah,                   // ✅ SIMPAN jumlah
     harga: barang.harga,
     total,
-    timestamp: new Date()
+    timestamp: Timestamp.now()
   });
 
   await updateDoc(barangRef, {
-    stok: barang.stok - qty
+    stok: barang.stok - jumlah
   });
 
   alert("Transaksi berhasil disimpan.");
@@ -122,7 +125,7 @@ formTransaksi.addEventListener("submit", async (e) => {
   await tampilkanTransaksiHariIni();
 });
 
-// Export data transaksi ke Excel
+// Export Excel
 function exportToExcel(data) {
   const worksheet = XLSX.utils.json_to_sheet(data);
   const workbook = XLSX.utils.book_new();
