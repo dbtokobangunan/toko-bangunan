@@ -1,6 +1,12 @@
-// js/app-barang.js
 import { db } from './firebase-config.js';
-import { collection, addDoc, getDocs, deleteDoc, updateDoc, doc } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+import {
+  collection,
+  addDoc,
+  getDocs,
+  deleteDoc,
+  updateDoc,
+  doc
+} from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const barangForm = document.getElementById("barangForm");
 const daftarBarang = document.getElementById("daftarBarang");
@@ -9,7 +15,7 @@ const batalEditBtn = document.getElementById("batalEdit");
 
 let editId = null;
 
-// Ambil dan tampilkan data barang
+// Tampilkan daftar barang
 async function tampilkanBarang() {
   daftarBarang.innerHTML = "";
   const querySnapshot = await getDocs(collection(db, "barang"));
@@ -18,10 +24,10 @@ async function tampilkanBarang() {
     const tr = document.createElement("tr");
     tr.className = "border-b";
     tr.innerHTML = `
-      <td class="px-4 py-2">${data.nama}</td>
-      <td class="px-4 py-2">${data.kategori}</td>
-      <td class="px-4 py-2">Rp${data.harga}</td>
-      <td class="px-4 py-2">${data.stok}</td>
+      <td class="px-4 py-2">${data.nama || '-'}</td>
+      <td class="px-4 py-2">${data.kategori || '-'}</td>
+      <td class="px-4 py-2">Rp${data.harga || 0}</td>
+      <td class="px-4 py-2">${data.stok ?? 0}</td>
       <td class="px-4 py-2 text-center">
         <button class="text-blue-600 hover:underline mr-2" onclick="editBarang('${docSnap.id}', '${data.nama}', '${data.kategori}', ${data.harga}, ${data.stok})">Edit</button>
         <button class="text-red-600 hover:underline" onclick="hapusBarang('${docSnap.id}')">Hapus</button>
@@ -30,28 +36,38 @@ async function tampilkanBarang() {
   });
 }
 
-// Simpan data baru atau update
+// Tambah atau update barang
 barangForm.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const nama = document.getElementById("namaBarang").value;
-  const kategori = document.getElementById("kategoriBarang").value;
+  const nama = document.getElementById("namaBarang").value.trim();
+  const kategori = document.getElementById("kategoriBarang").value.trim();
   const harga = parseInt(document.getElementById("hargaBarang").value);
   const stok = parseInt(document.getElementById("stokBarang").value);
 
-  const data = { nama, kategori, harga, stok };
-
-  if (editId) {
-    const barangRef = doc(db, "barang", editId);
-    await updateDoc(barangRef, data);
-    formTitle.textContent = "Tambah Barang";
-    batalEditBtn.classList.add("hidden");
-    editId = null;
-  } else {
-    await addDoc(collection(db, "barang"), data);
+  if (!nama || !kategori || isNaN(harga) || isNaN(stok)) {
+    alert("Semua field wajib diisi dengan benar.");
+    return;
   }
 
-  barangForm.reset();
-  tampilkanBarang();
+  const data = { nama, kategori, harga, stok };
+
+  try {
+    if (editId) {
+      const barangRef = doc(db, "barang", editId);
+      await updateDoc(barangRef, data);
+      formTitle.textContent = "Tambah Barang";
+      batalEditBtn.classList.add("hidden");
+      editId = null;
+    } else {
+      await addDoc(collection(db, "barang"), data);
+    }
+
+    barangForm.reset();
+    tampilkanBarang();
+  } catch (err) {
+    console.error("Gagal menyimpan data barang:", err);
+    alert("Terjadi kesalahan saat menyimpan.");
+  }
 });
 
 // Fungsi edit
@@ -65,7 +81,7 @@ window.editBarang = function (id, nama, kategori, harga, stok) {
   batalEditBtn.classList.remove("hidden");
 };
 
-// Batal edit
+// Fungsi batal edit
 batalEditBtn.addEventListener("click", () => {
   barangForm.reset();
   formTitle.textContent = "Tambah Barang";
@@ -77,9 +93,15 @@ batalEditBtn.addEventListener("click", () => {
 window.hapusBarang = async function (id) {
   const ok = confirm("Yakin ingin menghapus barang ini?");
   if (!ok) return;
-  await deleteDoc(doc(db, "barang", id));
-  tampilkanBarang();
+
+  try {
+    await deleteDoc(doc(db, "barang", id));
+    tampilkanBarang();
+  } catch (err) {
+    console.error("Gagal menghapus barang:", err);
+    alert("Gagal menghapus data barang.");
+  }
 };
 
-// Inisialisasi
+// Inisialisasi saat halaman dimuat
 window.onload = tampilkanBarang;
