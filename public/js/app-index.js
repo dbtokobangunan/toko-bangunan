@@ -1,4 +1,3 @@
-// js/app-index.js
 import { db } from './firebase-config.js';
 import {
   collection,
@@ -13,38 +12,63 @@ const formTransaksi = document.getElementById("formTransaksi");
 const pilihBarang = document.getElementById("pilihBarang");
 const jumlahBarang = document.getElementById("jumlahBarang");
 const daftarTransaksi = document.getElementById("daftarTransaksi");
+const btnExport = document.getElementById("btnExport");
 
 let dataBarang = [];
 
-// Ambil daftar barang untuk dropdown
+// Isi dropdown
 async function isiDropdownBarang() {
-  const querySnapshot = await getDocs(collection(db, "barang"));
+  const snapshot = await getDocs(collection(db, "barang"));
   dataBarang = [];
   pilihBarang.innerHTML = '<option value="">-- Pilih Barang --</option>';
-  querySnapshot.forEach((docSnap) => {
+  snapshot.forEach(docSnap => {
     const data = docSnap.data();
     dataBarang.push({ id: docSnap.id, ...data });
     pilihBarang.innerHTML += `<option value="${docSnap.id}">${data.nama} - Rp${data.harga}</option>`;
   });
 }
 
-// Simpan transaksi penjualan
+// Simpan transaksi
+formTransaksi?.addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const barangId = pilihBarang.value;
+  const jumlah = parseInt(jumlahBarang.value);
+
+  const barang = dataBarang.find(b => b.id === barangId);
+  if (!barang) return;
+
+  const total = barang.harga * jumlah;
+
+  await addDoc(collection(db, "penjualan"), {
+    barangId,
+    namaBarang: barang.nama,
+    harga: barang.harga,
+    jumlah,
+    total,
+    timestamp: Timestamp.now()
+  });
+
+  formTransaksi.reset();
+  tampilkanTransaksiHariIni();
+});
+
+// Tampilkan transaksi hari ini
 async function tampilkanTransaksiHariIni() {
   daftarTransaksi.innerHTML = "";
   const now = new Date();
-  const awalHari = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const akhirHari = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const awal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const akhir = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
   const q = query(
     collection(db, "penjualan"),
-    where("timestamp", ">=", Timestamp.fromDate(awalHari)),
-    where("timestamp", "<", Timestamp.fromDate(akhirHari))
+    where("timestamp", ">=", Timestamp.fromDate(awal)),
+    where("timestamp", "<", Timestamp.fromDate(akhir))
   );
 
-  const querySnapshot = await getDocs(q);
+  const snapshot = await getDocs(q);
   const rows = [];
 
-  querySnapshot.forEach((docSnap) => {
+  snapshot.forEach(docSnap => {
     const data = docSnap.data();
     const waktu = data.timestamp.toDate().toLocaleTimeString();
     const tr = document.createElement("tr");
@@ -56,25 +80,18 @@ async function tampilkanTransaksiHariIni() {
       <td class="px-4 py-2">Rp${data.total}</td>
     `;
     daftarTransaksi.appendChild(tr);
-    rows.push({
-      Waktu: waktu,
-      Barang: data.namaBarang,
-      Jumlah: data.jumlah,
-      Total: data.total,
-    });
+    rows.push({ Waktu: waktu, Barang: data.namaBarang, Jumlah: data.jumlah, Total: data.total });
   });
 
-  const btnExport = document.getElementById("btnExport");
-  if (rows.length > 0) {
+  if (btnExport && rows.length > 0) {
     btnExport.classList.remove("hidden");
     btnExport.onclick = () => exportToExcel(rows);
-  } else {
+  } else if (btnExport) {
     btnExport.classList.add("hidden");
   }
 }
 
-
-// Fungsi export ke Excel
+// Export Excel
 function exportToExcel(data) {
   const worksheet = XLSX.utils.json_to_sheet(data);
   const workbook = XLSX.utils.book_new();
@@ -82,38 +99,8 @@ function exportToExcel(data) {
   XLSX.writeFile(workbook, "penjualan-harian.xlsx");
 }
 
-
-// Tampilkan transaksi hari ini
-async function tampilkanTransaksiHariIni() {
-  daftarTransaksi.innerHTML = "";
-  const now = new Date();
-  const awalHari = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const akhirHari = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-
-  const q = query(
-    collection(db, "penjualan"),
-    where("timestamp", ">=", Timestamp.fromDate(awalHari)),
-    where("timestamp", "<", Timestamp.fromDate(akhirHari))
-  );
-
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const waktu = data.timestamp.toDate().toLocaleTimeString();
-    const tr = document.createElement("tr");
-    tr.className = "border-b";
-    tr.innerHTML = `
-      <td class="px-4 py-2">${waktu}</td>
-      <td class="px-4 py-2">${data.namaBarang}</td>
-      <td class="px-4 py-2">${data.jumlah}</td>
-      <td class="px-4 py-2">Rp${data.total}</td>
-    `;
-    daftarTransaksi.appendChild(tr);
-  });
-}
-
-// Inisialisasi saat halaman dimuat
-window.onload = async function () {
+// Inisialisasi
+window.onload = async () => {
   await isiDropdownBarang();
   await tampilkanTransaksiHariIni();
 };

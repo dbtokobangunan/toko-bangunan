@@ -1,7 +1,8 @@
-// js/firebase-config.js
+// firebase-config.js
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
+// Konfigurasi Firebase dari Firebase Console
 const firebaseConfig = {
   apiKey: "AIzaSyCtM9BnM3iJF_KcZDHMKE11Mob8EBXDGX0",
   authDomain: "toko-bangunan01.firebaseapp.com",
@@ -12,5 +13,8 @@ const firebaseConfig = {
   measurementId: "G-XEXDVSLBGW"
 };
 
+// Inisialisasi Firebase
 const app = initializeApp(firebaseConfig);
+
+// Ekspor Firestore
 export const db = getFirestore(app);
