@@ -3,6 +3,8 @@ import {
   collection,
   getDocs,
   addDoc,
+  doc,
+  updateDoc,
   query,
   where,
   Timestamp
@@ -12,63 +14,72 @@ const formTransaksi = document.getElementById("formTransaksi");
 const pilihBarang = document.getElementById("pilihBarang");
 const jumlahBarang = document.getElementById("jumlahBarang");
 const daftarTransaksi = document.getElementById("daftarTransaksi");
-const btnExport = document.getElementById("btnExport");
 
 let dataBarang = [];
 
-// Isi dropdown
+// Ambil daftar barang
 async function isiDropdownBarang() {
-  const snapshot = await getDocs(collection(db, "barang"));
+  const querySnapshot = await getDocs(collection(db, "barang"));
   dataBarang = [];
   pilihBarang.innerHTML = '<option value="">-- Pilih Barang --</option>';
-  snapshot.forEach(docSnap => {
+  querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
     dataBarang.push({ id: docSnap.id, ...data });
     pilihBarang.innerHTML += `<option value="${docSnap.id}">${data.nama} - Rp${data.harga}</option>`;
   });
 }
 
-// Simpan transaksi
-formTransaksi?.addEventListener("submit", async (e) => {
+// Simpan transaksi dan kurangi stok 👇
+formTransaksi.addEventListener("submit", async (e) => {
   e.preventDefault();
   const barangId = pilihBarang.value;
   const jumlah = parseInt(jumlahBarang.value);
 
-  const barang = dataBarang.find(b => b.id === barangId);
-  if (!barang) return;
+  const barangDipilih = dataBarang.find(b => b.id === barangId);
+  if (!barangDipilih) return;
 
-  const total = barang.harga * jumlah;
+  if (barangDipilih.stok < jumlah) {
+    alert("Stok tidak mencukupi!");
+    return;
+  }
+
+  const total = barangDipilih.harga * jumlah;
 
   await addDoc(collection(db, "penjualan"), {
     barangId,
-    namaBarang: barang.nama,
-    harga: barang.harga,
+    namaBarang: barangDipilih.nama,
+    harga: barangDipilih.harga,
     jumlah,
     total,
     timestamp: Timestamp.now()
   });
 
+  // Kurangi stok barang 👇
+  const barangRef = doc(db, "barang", barangId);
+  await updateDoc(barangRef, {
+    stok: barangDipilih.stok - jumlah
+  });
+
   formTransaksi.reset();
   tampilkanTransaksiHariIni();
+  await isiDropdownBarang(); // refresh dropdown
 });
 
-// Tampilkan transaksi hari ini
+// Menampilkan transaksi hari ini
 async function tampilkanTransaksiHariIni() {
   daftarTransaksi.innerHTML = "";
   const now = new Date();
-  const awal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const akhir = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  const awalHari = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const akhirHari = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
   const q = query(
     collection(db, "penjualan"),
-    where("timestamp", ">=", Timestamp.fromDate(awal)),
-    where("timestamp", "<", Timestamp.fromDate(akhir))
+    where("timestamp", ">=", Timestamp.fromDate(awalHari)),
+    where("timestamp", "<", Timestamp.fromDate(akhirHari))
   );
 
-  const snapshot = await getDocs(q);
-  const rows = [];
-
-  snapshot.forEach(docSnap => {
+  const querySnapshot = await getDocs(q);
+  querySnapshot.forEach((docSnap) => {
     const data = docSnap.data();
     const waktu = data.timestamp.toDate().toLocaleTimeString();
     const tr = document.createElement("tr");
@@ -80,27 +91,11 @@ async function tampilkanTransaksiHariIni() {
       <td class="px-4 py-2">Rp${data.total}</td>
     `;
     daftarTransaksi.appendChild(tr);
-    rows.push({ Waktu: waktu, Barang: data.namaBarang, Jumlah: data.jumlah, Total: data.total });
   });
-
-  if (btnExport && rows.length > 0) {
-    btnExport.classList.remove("hidden");
-    btnExport.onclick = () => exportToExcel(rows);
-  } else if (btnExport) {
-    btnExport.classList.add("hidden");
-  }
 }
 
-// Export Excel
-function exportToExcel(data) {
-  const worksheet = XLSX.utils.json_to_sheet(data);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, "PenjualanHarian");
-  XLSX.writeFile(workbook, "penjualan-harian.xlsx");
-}
-
-// Inisialisasi
-window.onload = async () => {
+// Inisialisasi saat halaman dimuat
+window.onload = async function () {
   await isiDropdownBarang();
   await tampilkanTransaksiHariIni();
 };
