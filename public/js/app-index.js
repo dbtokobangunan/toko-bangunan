@@ -3,99 +3,135 @@ import {
   collection,
   getDocs,
   addDoc,
-  doc,
   updateDoc,
-  query,
-  where,
-  Timestamp
+  doc,
+  getDoc
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const formTransaksi = document.getElementById("formTransaksi");
-const pilihBarang = document.getElementById("pilihBarang");
-const jumlahBarang = document.getElementById("jumlahBarang");
 const daftarTransaksi = document.getElementById("daftarTransaksi");
+const selectBarang = document.getElementById("pilihBarang");
+const btnExport = document.getElementById("btnExport");
 
-let dataBarang = [];
+// Format ke Rupiah
+function formatRupiah(angka) {
+  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(angka);
+}
 
-// Ambil daftar barang
-async function isiDropdownBarang() {
-  const querySnapshot = await getDocs(collection(db, "barang"));
-  dataBarang = [];
-  pilihBarang.innerHTML = '<option value="">-- Pilih Barang --</option>';
-  querySnapshot.forEach((docSnap) => {
+// Muat data barang ke dropdown
+async function muatBarangKeDropdown() {
+  selectBarang.innerHTML = '<option value="">-- Pilih Barang --</option>';
+  const snapshot = await getDocs(collection(db, "barang"));
+  snapshot.forEach(docSnap => {
     const data = docSnap.data();
-    dataBarang.push({ id: docSnap.id, ...data });
-    pilihBarang.innerHTML += `<option value="${docSnap.id}">${data.nama} - Rp${data.harga}</option>`;
+    if (data && data.nama && data.harga !== undefined && data.stok > 0) {
+      const option = document.createElement("option");
+      option.value = docSnap.id;
+      option.textContent = `${data.nama} (Stok: ${data.stok})`;
+      option.dataset.harga = data.harga;
+      selectBarang.appendChild(option);
+    }
   });
 }
 
-// Simpan transaksi dan kurangi stok 👇
+// Tampilkan transaksi hari ini
+async function tampilkanTransaksiHariIni() {
+  daftarTransaksi.innerHTML = "";
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const besok = new Date(today);
+  besok.setDate(besok.getDate() + 1);
+
+  const querySnapshot = await getDocs(collection(db, "penjualan"));
+  const dataExport = [];
+  let adaData = false;
+
+  querySnapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const tgl = data.timestamp?.toDate();
+    if (tgl >= today && tgl < besok) {
+      adaData = true;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td class="px-4 py-2">${tgl.toLocaleString()}</td>
+        <td class="px-4 py-2">${data.nama}</td>
+        <td class="px-4 py-2">${data.qty}</td>
+        <td class="px-4 py-2">${formatRupiah(data.total)}</td>`;
+      daftarTransaksi.appendChild(tr);
+
+      dataExport.push({
+        Tanggal: tgl.toLocaleString(),
+        Barang: data.nama,
+        Jumlah: data.qty,
+        Total: data.total
+      });
+    }
+  });
+
+  if (adaData) {
+    btnExport.classList.remove("hidden");
+    btnExport.onclick = () => exportToExcel(dataExport);
+  } else {
+    btnExport.classList.add("hidden");
+  }
+}
+
+// Simpan transaksi
 formTransaksi.addEventListener("submit", async (e) => {
   e.preventDefault();
-  const barangId = pilihBarang.value;
-  const jumlah = parseInt(jumlahBarang.value);
+  const barangId = selectBarang.value;
+  const qty = parseInt(document.getElementById("jumlahBarang").value);
 
-  const barangDipilih = dataBarang.find(b => b.id === barangId);
-  if (!barangDipilih) return;
-
-  if (barangDipilih.stok < jumlah) {
-    alert("Stok tidak mencukupi!");
+  if (!barangId || isNaN(qty) || qty <= 0) {
+    alert("Silakan pilih barang dan isi jumlah dengan benar.");
     return;
   }
 
-  const total = barangDipilih.harga * jumlah;
+  const barangRef = doc(db, "barang", barangId);
+  const barangSnap = await getDoc(barangRef);
+
+  if (!barangSnap.exists()) {
+    alert("Barang tidak ditemukan.");
+    return;
+  }
+
+  const barang = barangSnap.data();
+  if (qty > barang.stok) {
+    alert("Stok tidak cukup.");
+    return;
+  }
+
+  const total = qty * barang.harga;
 
   await addDoc(collection(db, "penjualan"), {
     barangId,
-    namaBarang: barangDipilih.nama,
-    harga: barangDipilih.harga,
-    jumlah,
+    nama: barang.nama,
+    qty,
+    harga: barang.harga,
     total,
-    timestamp: Timestamp.now()
+    timestamp: new Date()
   });
 
-  // Kurangi stok barang 👇
-  const barangRef = doc(db, "barang", barangId);
   await updateDoc(barangRef, {
-    stok: barangDipilih.stok - jumlah
+    stok: barang.stok - qty
   });
 
+  alert("Transaksi berhasil disimpan.");
   formTransaksi.reset();
-  tampilkanTransaksiHariIni();
-  await isiDropdownBarang(); // refresh dropdown
+  await muatBarangKeDropdown();
+  await tampilkanTransaksiHariIni();
 });
 
-// Menampilkan transaksi hari ini
-async function tampilkanTransaksiHariIni() {
-  daftarTransaksi.innerHTML = "";
-  const now = new Date();
-  const awalHari = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const akhirHari = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-
-  const q = query(
-    collection(db, "penjualan"),
-    where("timestamp", ">=", Timestamp.fromDate(awalHari)),
-    where("timestamp", "<", Timestamp.fromDate(akhirHari))
-  );
-
-  const querySnapshot = await getDocs(q);
-  querySnapshot.forEach((docSnap) => {
-    const data = docSnap.data();
-    const waktu = data.timestamp.toDate().toLocaleTimeString();
-    const tr = document.createElement("tr");
-    tr.className = "border-b";
-    tr.innerHTML = `
-      <td class="px-4 py-2">${waktu}</td>
-      <td class="px-4 py-2">${data.namaBarang}</td>
-      <td class="px-4 py-2">${data.jumlah}</td>
-      <td class="px-4 py-2">Rp${data.total}</td>
-    `;
-    daftarTransaksi.appendChild(tr);
-  });
+// Export data transaksi ke Excel
+function exportToExcel(data) {
+  const worksheet = XLSX.utils.json_to_sheet(data);
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, worksheet, "TransaksiHariIni");
+  XLSX.writeFile(workbook, "transaksi-harian.xlsx");
 }
 
-// Inisialisasi saat halaman dimuat
-window.onload = async function () {
-  await isiDropdownBarang();
+// Inisialisasi
+window.addEventListener("DOMContentLoaded", async () => {
+  await muatBarangKeDropdown();
   await tampilkanTransaksiHariIni();
-};
+});
