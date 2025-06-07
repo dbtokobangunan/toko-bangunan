@@ -1,3 +1,4 @@
+// js/app-index.js
 import { db } from './firebase-config.js';
 import {
   collection,
@@ -8,6 +9,8 @@ import {
   getDoc,
   Timestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
+
+import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs";
 
 const formTransaksi = document.getElementById("formTransaksi");
 const daftarTransaksi = document.getElementById("daftarTransaksi");
@@ -108,8 +111,8 @@ formTransaksi.addEventListener("submit", async (e) => {
 
   await addDoc(collection(db, "penjualan"), {
     barangId,
-    namaBarang: barang.nama,  // ✅ SIMPAN namaBarang
-    jumlah,                   // ✅ SIMPAN jumlah
+    namaBarang: barang.nama,
+    jumlah,
     harga: barang.harga,
     total,
     timestamp: Timestamp.now()
