@@ -1,3 +1,4 @@
+// js/app-penjualan.js
 import { db } from './firebase-config.js';
 import {
   collection,
@@ -7,11 +8,14 @@ import {
   Timestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
+import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs";
+
 const jenisLaporan = document.getElementById("jenisLaporan");
 const tanggalFilter = document.getElementById("tanggalFilter");
 const tabelPenjualan = document.getElementById("tabelPenjualan");
 const btnExport = document.getElementById("btnExport");
 
+// Tambahkan navbar (opsional)
 const navBar = document.createElement("nav");
 navBar.className = "bg-white shadow-md py-4 mb-8";
 navBar.innerHTML = `
@@ -67,14 +71,14 @@ window.tampilkanLaporan = async function () {
 
   snapshot.forEach(doc => {
     const data = doc.data();
-    const waktu = data.timestamp.toDate();
-    const tanggalStr = waktu.toLocaleDateString("id-ID");
+    const waktu = data.timestamp?.toDate();
+    const tanggalStr = waktu?.toLocaleDateString("id-ID") || "-";
     const row = {
       Tanggal: tanggalStr,
-      Barang: data.namaBarang,
-      Jumlah: data.jumlah,
-      Harga: data.harga,
-      Total: data.total
+      Barang: data.namaBarang || "-",
+      Jumlah: data.jumlah ?? 0,
+      Harga: data.harga ?? 0,
+      Total: data.total ?? 0
     };
     rows.push(row);
 
@@ -82,10 +86,10 @@ window.tampilkanLaporan = async function () {
     tr.className = "border-b";
     tr.innerHTML = `
       <td class="px-4 py-2">${tanggalStr}</td>
-      <td class="px-4 py-2">${data.namaBarang}</td>
-      <td class="px-4 py-2">${data.jumlah}</td>
-      <td class="px-4 py-2">Rp${data.harga}</td>
-      <td class="px-4 py-2">Rp${data.total}</td>
+      <td class="px-4 py-2">${data.namaBarang ?? "-"}</td>
+      <td class="px-4 py-2">${data.jumlah ?? 0}</td>
+      <td class="px-4 py-2">Rp${data.harga ?? 0}</td>
+      <td class="px-4 py-2">Rp${data.total ?? 0}</td>
     `;
     tabelPenjualan.appendChild(tr);
   });
