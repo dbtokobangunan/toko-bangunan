@@ -26,6 +26,30 @@
   <div class="max-w-4xl mx-auto py-10 px-4">
     <h1 class="text-3xl font-bold mb-6 text-center">Transaksi Kasir</h1>
 
+    <!-- Tambahkan pada bagian form kasir -->
+<form id="formTransaksi" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+  <div>
+    <label class="block text-sm font-medium">Pilih Barang</label>
+    <select id="pilihBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+      <option value="">-- Pilih Barang --</option>
+    </select>
+  </div>
+  <div>
+    <label class="block text-sm font-medium">Jumlah</label>
+    <input type="number" id="jumlahBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+  </div>
+  <div>
+    <label class="block text-sm font-medium">Harga Satuan</label>
+    <input type="number" id="hargaBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+  </div>
+  <div class="md:col-span-3">
+    <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+      Simpan Transaksi
+    </button>
+  </div>
+</form>
+
+
     <!-- Form Transaksi -->
     <div class="bg-white rounded-lg shadow p-6 mb-8">
       <form id="formTransaksi" class="grid grid-cols-1 md:grid-cols-2 gap-4">

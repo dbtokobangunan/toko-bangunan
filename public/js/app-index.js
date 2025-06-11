@@ -1,4 +1,3 @@
-// js/app-index.js
 import { db } from './firebase-config.js';
 import {
   collection,
@@ -10,35 +9,31 @@ import {
   Timestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-import * as XLSX from "https://cdn.sheetjs.com/xlsx-0.20.0/package/xlsx.mjs";
-
 const formTransaksi = document.getElementById("formTransaksi");
 const daftarTransaksi = document.getElementById("daftarTransaksi");
 const selectBarang = document.getElementById("pilihBarang");
 const btnExport = document.getElementById("btnExport");
+const jumlahBarang = document.getElementById("jumlahBarang");
+const hargaBarang = document.getElementById("hargaBarang");
 
-// Format ke Rupiah
 function formatRupiah(angka) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(angka);
 }
 
-// Muat data barang ke dropdown
 async function muatBarangKeDropdown() {
   selectBarang.innerHTML = '<option value="">-- Pilih Barang --</option>';
   const snapshot = await getDocs(collection(db, "barang"));
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
-    if (data && data.nama && data.harga !== undefined && data.stok > 0) {
+    if (data && data.nama && data.stok > 0) {
       const option = document.createElement("option");
       option.value = docSnap.id;
       option.textContent = `${data.nama} (Stok: ${data.stok})`;
-      option.dataset.harga = data.harga;
       selectBarang.appendChild(option);
     }
   });
 }
 
-// Tampilkan transaksi hari ini
 async function tampilkanTransaksiHariIni() {
   daftarTransaksi.innerHTML = "";
   const today = new Date();
@@ -56,7 +51,6 @@ async function tampilkanTransaksiHariIni() {
 
     if (tgl && tgl >= today && tgl < besok) {
       adaData = true;
-
       const tr = document.createElement("tr");
       tr.innerHTML = `
         <td class="px-4 py-2">${tgl.toLocaleString()}</td>
@@ -82,14 +76,14 @@ async function tampilkanTransaksiHariIni() {
   }
 }
 
-// Simpan transaksi
 formTransaksi.addEventListener("submit", async (e) => {
   e.preventDefault();
   const barangId = selectBarang.value;
-  const jumlah = parseInt(document.getElementById("jumlahBarang").value);
+  const jumlah = parseInt(jumlahBarang.value);
+  const harga = parseInt(hargaBarang.value);
 
-  if (!barangId || isNaN(jumlah) || jumlah <= 0) {
-    alert("Silakan pilih barang dan isi jumlah dengan benar.");
+  if (!barangId || isNaN(jumlah) || jumlah <= 0 || isNaN(harga) || harga <= 0) {
+    alert("Isi semua data dengan benar.");
     return;
   }
 
@@ -107,13 +101,13 @@ formTransaksi.addEventListener("submit", async (e) => {
     return;
   }
 
-  const total = jumlah * barang.harga;
+  const total = jumlah * harga;
 
   await addDoc(collection(db, "penjualan"), {
     barangId,
     namaBarang: barang.nama,
     jumlah,
-    harga: barang.harga,
+    harga,
     total,
     timestamp: Timestamp.now()
   });
@@ -128,7 +122,6 @@ formTransaksi.addEventListener("submit", async (e) => {
   await tampilkanTransaksiHariIni();
 });
 
-// Export Excel
 function exportToExcel(data) {
   const worksheet = XLSX.utils.json_to_sheet(data);
   const workbook = XLSX.utils.book_new();
@@ -136,7 +129,6 @@ function exportToExcel(data) {
   XLSX.writeFile(workbook, "transaksi-harian.xlsx");
 }
 
-// Inisialisasi
 window.addEventListener("DOMContentLoaded", async () => {
   await muatBarangKeDropdown();
   await tampilkanTransaksiHariIni();
