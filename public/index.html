@@ -23,6 +23,60 @@
   </nav>
 
   <div class="max-w-4xl mx-auto py-10 px-4">
+    <!-- Tambahan Kalkulator Penjualan -->
+<div class="grid md:grid-cols-2 gap-4 mb-8">
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold mb-4">Form Transaksi</h2>
+    <form id="formTransaksi" class="grid gap-4">
+      <div>
+        <label class="block text-sm font-medium">Pilih Barang</label>
+        <select id="pilihBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required></select>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Jumlah</label>
+        <input type="number" id="jumlahBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Harga Satuan</label>
+        <input type="number" id="hargaSatuan" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Total Harga</label>
+        <input type="text" id="totalHarga" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Uang Diterima</label>
+        <input type="number" id="uangDiterima" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Kembalian</label>
+        <input type="text" id="kembalian" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly />
+      </div>
+      <button type="submit" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Simpan Transaksi</button>
+    </form>
+  </div>
+
+  <!-- Kalkulator Mini -->
+  <div class="bg-white rounded-lg shadow p-6">
+    <h2 class="text-lg font-semibold mb-4">Kalkulator</h2>
+    <div class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Harga Satuan</label>
+        <input type="number" id="calcHarga" class="w-full border-gray-300 rounded-md shadow-sm" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Jumlah</label>
+        <input type="number" id="calcJumlah" class="w-full border-gray-300 rounded-md shadow-sm" />
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Total</label>
+        <input type="text" id="calcTotal" class="w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly />
+      </div>
+      <button onclick="hitungKalkulator()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Hitung</button>
+    </div>
+  </div>
+</div>
+
     <h1 class="text-3xl font-bold mb-6 text-center">Transaksi Kasir</h1>
 
     <div class="bg-white rounded-lg shadow p-6 mb-8">
