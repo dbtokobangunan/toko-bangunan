@@ -4,10 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kasir - Toko Bangunan</title>
-
   <script type="module" src="/js/firebase-config.js"></script>
   <script type="module" src="/js/app-index.js" defer></script>
-
+  <script src="https://cdn.sheetjs.com/xlsx-latest/package/xlsx.full.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
@@ -26,31 +25,6 @@
   <div class="max-w-4xl mx-auto py-10 px-4">
     <h1 class="text-3xl font-bold mb-6 text-center">Transaksi Kasir</h1>
 
-    <!-- Tambahkan pada bagian form kasir -->
-<form id="formTransaksi" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-  <div>
-    <label class="block text-sm font-medium">Pilih Barang</label>
-    <select id="pilihBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-      <option value="">-- Pilih Barang --</option>
-    </select>
-  </div>
-  <div>
-    <label class="block text-sm font-medium">Jumlah</label>
-    <input type="number" id="jumlahBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-  </div>
-  <div>
-    <label class="block text-sm font-medium">Harga Satuan</label>
-    <input type="number" id="hargaBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
-  </div>
-  <div class="md:col-span-3">
-    <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-      Simpan Transaksi
-    </button>
-  </div>
-</form>
-
-
-    <!-- Form Transaksi -->
     <div class="bg-white rounded-lg shadow p-6 mb-8">
       <form id="formTransaksi" class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
@@ -62,6 +36,22 @@
         <div>
           <label class="block text-sm font-medium">Jumlah</label>
           <input type="number" id="jumlahBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Harga Satuan</label>
+          <input type="number" id="hargaSatuan" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Total Bayar</label>
+          <input type="text" id="totalBayar" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Uang Diterima</label>
+          <input type="number" id="uangDiterima" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" />
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Kembalian</label>
+          <input type="text" id="kembalian" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm bg-gray-100" readonly />
         </div>
         <div class="md:col-span-2">
           <button type="submit" class="mt-4 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
