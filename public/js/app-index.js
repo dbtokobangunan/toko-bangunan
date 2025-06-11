@@ -142,6 +142,34 @@ jumlahBarang.addEventListener("input", updateTotalBayar);
 hargaSatuan.addEventListener("input", updateTotalBayar);
 uangDiterima.addEventListener("input", updateKembalian);
 
+// Update total harga dan kembalian otomatis
+document.getElementById("jumlahBarang").addEventListener("input", hitungTotalHarga);
+document.getElementById("hargaSatuan").addEventListener("input", hitungTotalHarga);
+document.getElementById("uangDiterima").addEventListener("input", hitungKembalian);
+
+function hitungTotalHarga() {
+  const qty = parseInt(document.getElementById("jumlahBarang").value) || 0;
+  const harga = parseInt(document.getElementById("hargaSatuan").value) || 0;
+  const total = qty * harga;
+  document.getElementById("totalHarga").value = total;
+  hitungKembalian();
+}
+
+function hitungKembalian() {
+  const bayar = parseInt(document.getElementById("uangDiterima").value) || 0;
+  const total = parseInt(document.getElementById("totalHarga").value) || 0;
+  const kembali = bayar - total;
+  document.getElementById("kembalian").value = kembali > 0 ? kembali : 0;
+}
+
+// Kalkulator mini
+function hitungKalkulator() {
+  const harga = parseInt(document.getElementById("calcHarga").value) || 0;
+  const jumlah = parseInt(document.getElementById("calcJumlah").value) || 0;
+  document.getElementById("calcTotal").value = harga * jumlah;
+}
+
+
 window.addEventListener("DOMContentLoaded", async () => {
   await muatBarangKeDropdown();
   await tampilkanTransaksiHariIni();
