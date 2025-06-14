@@ -14,7 +14,15 @@ import {
 const form = document.getElementById("formStokMasuk");
 const pilihBarang = document.getElementById("pilihBarang");
 const jumlahMasuk = document.getElementById("jumlahMasuk");
-const daftarStokMasuk = document.getElementById("daftarStokMasuk");
+const tbody = document.getElementById("daftarStokMasuk");
+tbody.innerHTML += `
+  <tr>
+    <td class="px-4 py-2">${waktu}</td>
+    <td class="px-4 py-2">${namaBarang}</td>
+    <td class="px-4 py-2">${jumlah}</td>
+  </tr>
+`;
+
 
 // const navBar = document.createElement("nav");
 // navBar.className = "bg-white shadow-md py-4 mb-8";

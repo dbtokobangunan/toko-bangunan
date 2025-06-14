@@ -1,45 +1,61 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Stok Barang</title>
-  <script type="module" src="/js/app-stok.js" defer></script>
   <script type="module" src="/js/firebase-config.js"></script>
+  <script type="module" src="/js/app-stok.js" defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
 
   <!-- Navbar -->
-  <nav class="bg-white shadow py-3 text-sm sm:text-base">
-    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4 font-semibold">
-      <a href="index.html" class="text-blue-600 hover:underline">Kasir</a>
-      <a href="barang.html" class="text-blue-600 hover:underline">Data Barang</a>
-      <a href="penjualan.html" class="text-blue-600 hover:underline">Penjualan</a>
-      <a href="pengeluaran.html" class="text-blue-600 hover:underline">Pengeluaran</a>
-      <a href="profit.html" class="text-blue-600 hover:underline">Profit</a>
-      <a href="stok.html" class="text-blue-600 hover:underline">Stok Masuk</a>
+  <nav class="bg-white shadow-md py-4 mb-6">
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4 text-sm sm:text-base">
+      <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
+      <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
+      <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
+      <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
+      <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit</a>
+      <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
     </div>
   </nav>
-    <h1 class="text-3xl font-bold mb-6 text-center">Manajemen Stok Barang</h1>
 
-    <!-- Form Tambah Stok Masuk -->
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-4">Tambah Stok Masuk</h2>
+  <main class="max-w-4xl mx-auto px-4 py-6">
+    <h1 class="text-2xl font-bold mb-6 text-center">Manajemen Stok Barang</h1>
+
+    <!-- Form Tambah Stok -->
+    <section class="bg-white shadow rounded p-6 mb-8">
+      <h2 class="text-lg font-semibold mb-4">Tambah Stok Masuk</h2>
       <form id="formStokMasuk" class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <select id="pilihBarang" class="border-gray-300 rounded-md shadow-sm" required>
+        <select id="pilihBarang" class="border border-gray-300 rounded p-2" required>
           <option value="">-- Pilih Barang --</option>
         </select>
-        <input type="number" id="jumlahMasuk" placeholder="Jumlah" class="border-gray-300 rounded-md shadow-sm" required>
+        <input type="number" id="jumlahMasuk" placeholder="Jumlah" class="border border-gray-300 rounded p-2" required>
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah</button>
       </form>
-    </div>
+    </section>
 
     <!-- Daftar Barang Masuk Hari Ini -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-4">Barang Masuk Hari Ini</h2>
-      <ul id="daftarStokMasuk" class="space-y-2 text-gray-700"></ul>
-    </div>
-  </div>
+    <section class="bg-white shadow rounded p-6">
+      <h2 class="text-lg font-semibold mb-4">Barang Masuk Hari Ini</h2>
+      <div class="overflow-x-auto border rounded">
+        <table class="min-w-full table-auto text-sm">
+          <thead class="bg-gray-200 text-left">
+            <tr>
+              <th class="px-4 py-2">Waktu</th>
+              <th class="px-4 py-2">Barang</th>
+              <th class="px-4 py-2">Jumlah</th>
+            </tr>
+          </thead>
+          <tbody id="daftarStokMasuk">
+            <!-- Baris data akan diisi oleh JavaScript -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
 </body>
 </html>
