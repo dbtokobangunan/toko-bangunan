@@ -57,16 +57,34 @@
     </div>
 
     <!-- Kalkulator -->
-    <div class="bg-white shadow rounded-lg p-6">
-      <h2 class="text-lg font-semibold mb-3">Kalkulator</h2>
-      <input type="text" id="calcDisplay" class="w-full border p-2 mb-3 rounded text-right" disabled>
-      <div class="grid grid-cols-4 gap-2 text-center">
-        ${[7,8,9,'/',4,5,6,'*',1,2,3,'-',0,'.','=','+'].map(btn => `
-          <button onclick="press('${btn}')" class="bg-gray-200 p-2 rounded text-lg">${btn}</button>
-        `).join('')}
-      </div>
-      <button onclick="clearCalc()" class="w-full mt-3 bg-red-500 text-white p-2 rounded">C</button>
-    </div>
+<div class="bg-white rounded shadow p-4">
+  <h2 class="text-lg font-semibold mb-2">Kalkulator</h2>
+  <input type="text" id="calcDisplay" class="w-full border mb-2 p-2 rounded text-right" disabled>
+  <div class="grid grid-cols-4 gap-2">
+    <button onclick="press('7')" class="bg-gray-200 p-2 rounded">7</button>
+    <button onclick="press('8')" class="bg-gray-200 p-2 rounded">8</button>
+    <button onclick="press('9')" class="bg-gray-200 p-2 rounded">9</button>
+    <button onclick="press('/')" class="bg-gray-200 p-2 rounded">/</button>
+
+    <button onclick="press('4')" class="bg-gray-200 p-2 rounded">4</button>
+    <button onclick="press('5')" class="bg-gray-200 p-2 rounded">5</button>
+    <button onclick="press('6')" class="bg-gray-200 p-2 rounded">6</button>
+    <button onclick="press('*')" class="bg-gray-200 p-2 rounded">*</button>
+
+    <button onclick="press('1')" class="bg-gray-200 p-2 rounded">1</button>
+    <button onclick="press('2')" class="bg-gray-200 p-2 rounded">2</button>
+    <button onclick="press('3')" class="bg-gray-200 p-2 rounded">3</button>
+    <button onclick="press('-')" class="bg-gray-200 p-2 rounded">-</button>
+
+    <button onclick="press('0')" class="bg-gray-200 p-2 rounded">0</button>
+    <button onclick="press('.')" class="bg-gray-200 p-2 rounded">.</button>
+    <button onclick="press('=')" class="bg-green-600 text-white p-2 rounded">=</button>
+    <button onclick="press('+')" class="bg-gray-200 p-2 rounded">+</button>
+  </div>
+  <button onclick="clearCalc()" class="w-full mt-2 bg-red-500 text-white p-2 rounded">C</button>
+</div>
+
+
 
   </div>
 
