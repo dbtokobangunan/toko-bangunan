@@ -9,29 +9,32 @@
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
+
   <!-- Navbar -->
-  <nav class="bg-white shadow-md py-4 mb-6">
-    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4 text-sm sm:text-base">
-      <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
-      <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
-      <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
-      <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
-      <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit Harian</a>
-      <a href="profit-bulanan.html" class="text-blue-600 font-semibold hover:underline">Profit Bulanan</a>
-      <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
+  <nav class="bg-white shadow py-3 text-sm sm:text-base">
+    <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4 font-semibold">
+      <a href="index.html" class="text-blue-600 hover:underline">Kasir</a>
+      <a href="barang.html" class="text-blue-600 hover:underline">Data Barang</a>
+      <a href="penjualan.html" class="text-blue-600 hover:underline">Penjualan</a>
+      <a href="pengeluaran.html" class="text-blue-600 hover:underline">Pengeluaran</a>
+      <a href="profit.html" class="text-blue-600 hover:underline">Profit Harian</a>
+      <a href="profit-bulanan.html" class="text-blue-600 hover:underline">Profit Bulanan</a>
+      <a href="stok.html" class="text-blue-600 hover:underline">Stok Masuk</a>
     </div>
   </nav>
 
-  <div class="max-w-3xl mx-auto p-6 bg-white rounded shadow">
-    <h1 class="text-2xl font-bold mb-6">Manajemen Data Barang</h1>
-    <form id="barangForm" class="space-y-4">
-      <div>
-        <label class="block text-sm font-medium">Nama Barang</label>
-        <input id="namaBarang" type="text" class="w-full border p-2 rounded" required>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Kategori</label>
-          <select id="kategoriBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+  <!-- Form Input -->
+  <main class="max-w-4xl mx-auto mt-8 px-4">
+    <section class="bg-white p-6 rounded shadow">
+      <h1 class="text-xl font-bold mb-6">Manajemen Data Barang</h1>
+      <form id="barangForm" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium">Nama Barang</label>
+          <input id="namaBarang" type="text" class="w-full border p-2 rounded" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Kategori</label>
+          <select id="kategoriBarang" class="w-full border p-2 rounded" required>
             <option value="">-- Pilih Kategori --</option>
             <option>Semen</option>
             <option>Pasir & Batu</option>
@@ -42,42 +45,46 @@
             <option>Listrik & Plumbing</option>
             <option>Lain-lain</option>
           </select>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Harga Beli</label>
-        <input id="hargaBeli" type="number" class="w-full border p-2 rounded" required>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Harga Jual</label>
-        <input id="hargaJual" type="number" class="w-full border p-2 rounded" required>
-      </div>
-      <div>
-        <label class="block text-sm font-medium">Stok Awal</label>
-        <input id="stokBarang" type="number" class="w-full border p-2 rounded" required>
-      </div>
-      <div class="flex justify-between">
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan Barang</button>
-        <button id="batalEdit" type="button" class="bg-gray-400 text-white px-4 py-2 rounded hidden">Batal</button>
-      </div>
-    </form>
-  </div>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Harga Beli</label>
+          <input id="hargaBeli" type="number" class="w-full border p-2 rounded" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Harga Jual</label>
+          <input id="hargaJual" type="number" class="w-full border p-2 rounded" required>
+        </div>
+        <div>
+          <label class="block text-sm font-medium">Stok Awal</label>
+          <input id="stokBarang" type="number" class="w-full border p-2 rounded" required>
+        </div>
+        <div class="flex justify-between">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Simpan Barang</button>
+          <button id="batalEdit" type="button" class="bg-gray-500 text-white px-4 py-2 rounded hidden">Batal</button>
+        </div>
+      </form>
+    </section>
 
-<div class="overflow-x-auto">
-      <h2 class="text-xl font-semibold mb-4">Daftar Barang</h2>
-  <table class="min-w-full table-auto border text-sm">
-    <thead class="bg-gray-200">
-      <tr>
-        <th class="px-4 py-2">Nama</th>
-        <th class="px-4 py-2">Kategori</th>
-        <th class="px-4 py-2">Harga Beli</th>
-        <th class="px-4 py-2">Harga Jual</th>
-        <th class="px-4 py-2">Stok</th>
-        <th class="px-4 py-2">Aksi</th>
-      </tr>
-    </thead>
-    <tbody id="daftarBarang"></tbody>
-  </table>
-</div>
+    <!-- Tabel Data Barang -->
+    <section class="mt-10">
+      <h2 class="text-lg font-bold mb-4">Daftar Barang</h2>
+      <div class="overflow-x-auto border rounded bg-white shadow">
+        <table class="min-w-full table-auto text-sm">
+          <thead class="bg-gray-200 text-left">
+            <tr>
+              <th class="px-4 py-2">Nama</th>
+              <th class="px-4 py-2">Kategori</th>
+              <th class="px-4 py-2">Harga Beli</th>
+              <th class="px-4 py-2">Harga Jual</th>
+              <th class="px-4 py-2">Stok</th>
+              <th class="px-4 py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="daftarBarang"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
 
 </body>
 </html>
