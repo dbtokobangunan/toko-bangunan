@@ -18,7 +18,7 @@
       <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
       <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
       <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
-      <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit</a>
+      <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit Harian</a>
       <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
     </div>
   </nav>
@@ -29,32 +29,30 @@
     <div class="bg-white shadow rounded-lg p-6 md:col-span-2">
       <h1 class="text-xl font-bold mb-4">Transaksi Kasir TB Putra Jaya</h1>
       <form id="formTransaksi" class="space-y-4">
-  <div>
-    <label for="pilihBarang" class="block text-sm font-medium mb-1">Pilih Barang</label>
-    <select id="pilihBarang" class="w-full border p-2 rounded" required></select>
-    <p id="debug" class="text-red-500 text-sm"></p>
-  </div>
-  <div>
-    <label for="jumlahBarang" class="block text-sm font-medium mb-1">Jumlah Barang</label>
-    <input type="number" id="jumlahBarang" class="w-full border p-2 rounded" placeholder="Jumlah" required />
-  </div>
-  <div>
-    <label class="block text-sm font-medium mb-1">Harga Satuan (Rp)</label>
-    <input type="text" id="hargaBarang" class="w-full border p-2 rounded bg-gray-100" readonly />
-  </div>
-  <div>
-    <label class="block text-sm font-medium mb-1">Total (Rp)</label>
-    <input type="text" id="totalHarga" class="w-full border p-2 rounded bg-gray-100" readonly />
-  </div>
-  <div>
-    <label for="uangDiterima" class="block text-sm font-medium mb-1">Uang Diterima (Rp)</label>
-    <input type="number" id="uangDiterima" class="w-full border p-2 rounded" placeholder="Uang Diterima" required />
-  </div>
-  <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-    Simpan Transaksi
-  </button>
-</form>
-
+        <div>
+          <label for="pilihBarang" class="block text-sm font-medium mb-1">Pilih Barang</label>
+          <select id="pilihBarang" class="w-full border p-2 rounded" required></select>
+        </div>
+        <div>
+          <label for="jumlahBarang" class="block text-sm font-medium mb-1">Jumlah Barang</label>
+          <input type="number" id="jumlahBarang" class="w-full border p-2 rounded" placeholder="Jumlah" required />
+        </div>
+        <div>
+          <label for="hargaBarang" class="block text-sm font-medium mb-1">Harga Satuan (Rp)</label>
+          <input type="number" id="hargaBarang" class="w-full border p-2 rounded" placeholder="Harga Jual" required />
+        </div>
+        <div>
+          <label for="uangDiterima" class="block text-sm font-medium mb-1">Uang Diterima (Rp)</label>
+          <input type="number" id="uangDiterima" class="w-full border p-2 rounded" placeholder="Uang Diterima" required />
+        </div>
+        <div class="text-sm">
+          <p>Total Bayar: <span id="totalBayar" class="font-bold">Rp0</span></p>
+          <p>Kembalian: <span id="kembalian" class="font-bold">Rp0</span></p>
+        </div>
+        <button type="submit" class="w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+          Simpan Transaksi
+        </button>
+      </form>
     </div>
 
     <!-- Kalkulator -->
