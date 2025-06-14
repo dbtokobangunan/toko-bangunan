@@ -29,16 +29,26 @@ function formatRupiah(angka) {
 async function muatBarang() {
   barangSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
   const snapshot = await getDocs(collection(db, "barang"));
+  
+  if (snapshot.empty) {
+    console.log("Tidak ada data barang ditemukan");
+  }
+
   snapshot.forEach(docSnap => {
     const data = docSnap.data();
-    const option = document.createElement("option");
-    option.value = docSnap.id;
-    option.textContent = data.nama;
-    option.dataset.hargaJual = data.hargaJual || 0;
-    option.dataset.hargaBeli = data.hargaBeli || 0;
-    barangSelect.appendChild(option);
+    console.log("Data barang:", data); // Tambahkan log ini
+
+    if (data.nama) {
+      const option = document.createElement("option");
+      option.value = docSnap.id;
+      option.textContent = data.nama;
+      option.dataset.hargaJual = data.hargaJual || 0;
+      option.dataset.hargaBeli = data.hargaBeli || 0;
+      barangSelect.appendChild(option);
+    }
   });
 }
+
 
 // Set harga jual otomatis saat barang dipilih
 barangSelect.addEventListener("change", () => {
