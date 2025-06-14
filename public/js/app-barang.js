@@ -26,7 +26,8 @@ async function tampilkanBarang() {
     tr.innerHTML = `
       <td class="px-4 py-2">${data.nama || '-'}</td>
       <td class="px-4 py-2">${data.kategori || '-'}</td>
-      <td class="px-4 py-2">Rp${data.harga || 0}</td>
+      <td class="px-4 py-2">Rp${data.hargaBeli || 0}</td>
+      <td class="px-4 py-2">Rp${data.hargaJual || 0}</td>
       <td class="px-4 py-2">${data.stok ?? 0}</td>
       <td class="px-4 py-2 text-center">
         <button class="text-blue-600 hover:underline mr-2" onclick="editBarang('${docSnap.id}', '${data.nama}', '${data.kategori}', ${data.harga}, ${data.stok})">Edit</button>
@@ -41,15 +42,16 @@ barangForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const nama = document.getElementById("namaBarang").value.trim();
   const kategori = document.getElementById("kategoriBarang").value.trim();
-  const harga = parseInt(document.getElementById("hargaBarang").value);
+  const hargaBeli = parseInt(document.getElementById("hargaBeli").value);
+  const hargaJual = parseInt(document.getElementById("hargaJual").value);
   const stok = parseInt(document.getElementById("stokBarang").value);
 
-  if (!nama || !kategori || isNaN(harga) || isNaN(stok)) {
-    alert("Semua field wajib diisi dengan benar.");
-    return;
+  if (!nama || !kategori || isNaN(hargaBeli) || isNaN(hargaJual) || isNaN(stok)) {
+  alert("Semua field wajib diisi dengan benar.");
+  return;
   }
 
-  const data = { nama, kategori, harga, stok };
+const data = { nama, kategori, hargaBeli, hargaJual, stok };
 
   try {
     if (editId) {
@@ -74,7 +76,8 @@ barangForm.addEventListener("submit", async (e) => {
 window.editBarang = function (id, nama, kategori, harga, stok) {
   document.getElementById("namaBarang").value = nama;
   document.getElementById("kategoriBarang").value = kategori;
-  document.getElementById("hargaBarang").value = harga;
+  document.getElementById("hargaBeli").value = hargaBeli;
+  document.getElementById("hargaJual").value = hargaJual;
   document.getElementById("stokBarang").value = stok;
   editId = id;
   formTitle.textContent = "Edit Barang";

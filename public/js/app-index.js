@@ -13,14 +13,18 @@ const form = document.getElementById("formTransaksi");
 const daftar = document.getElementById("daftarTransaksi");
 const barang = document.getElementById("pilihBarang");
 const jumlah = document.getElementById("jumlahBarang");
-const harga = document.getElementById("hargaBarang");
+const hargaBeli = document.getElementById("hargaSatuan");
+const hargaJual = document.getElementById("hargaJual");
 const uang = document.getElementById("uangDiterima");
 const totalLabel = document.getElementById("totalBayar");
 const kembalianLabel = document.getElementById("kembalian");
 const btnExport = document.getElementById("btnExport");
 
 function formatRupiah(angka) {
-  return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(angka);
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR"
+  }).format(angka);
 }
 
 async function muatBarang() {
@@ -57,7 +61,8 @@ async function tampilkanTransaksiHariIni() {
         Waktu: waktu.toLocaleString(),
         Barang: data.namaBarang,
         Jumlah: data.jumlah,
-        Total: data.total
+        Total: data.total,
+        Profit: data.profit ?? 0
       });
     }
   });
@@ -78,12 +83,17 @@ form.addEventListener("submit", async (e) => {
 
   const barangId = barang.value;
   const jml = parseInt(jumlah.value);
-  const hrg = parseInt(harga.value);
+  const beli = parseInt(hargaBeli.value);
+  const jual = parseInt(hargaJual.value);
   const bayar = parseInt(uang.value);
-  const total = jml * hrg;
+  const total = jml * jual;
   const kembali = bayar - total;
+  const profit = (jual - beli) * jml;
 
-  if (!barangId || jml <= 0 || hrg <= 0 || bayar < total) return alert("Isi data dengan benar");
+  if (!barangId || jml <= 0 || beli <= 0 || jual <= 0 || bayar < total) {
+    alert("Isi data dengan benar");
+    return;
+  }
 
   const barangDoc = await getDoc(doc(db, "barang", barangId));
   const namaBarang = barangDoc.data().nama;
@@ -92,8 +102,10 @@ form.addEventListener("submit", async (e) => {
     barangId,
     namaBarang,
     jumlah: jml,
-    harga: hrg,
+    hargaBeli: beli,
+    hargaJual: jual,
     total,
+    profit,
     timestamp: Timestamp.now()
   });
 
