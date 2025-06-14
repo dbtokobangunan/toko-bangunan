@@ -9,59 +9,105 @@ import {
 
 const ringkasan = document.getElementById("ringkasanProfit");
 
-window.hitungProfit = async function () {
-  const jenis = document.getElementById("jenisProfit").value;
-  const tanggal = new Date(document.getElementById("tanggalProfit").value);
-  if (isNaN(tanggal)) return alert("Harap pilih tanggal");
+// Buat dropdown filter
+const filterContainer = document.createElement("div");
+filterContainer.className = "mb-4 flex gap-4 items-center";
 
-  let awal, akhir;
-  if (jenis === "harian") {
-    awal = new Date(tanggal);
-    akhir = new Date(tanggal);
-    akhir.setDate(akhir.getDate() + 1);
-  } else if (jenis === "bulanan") {
-    awal = new Date(tanggal.getFullYear(), tanggal.getMonth(), 1);
-    akhir = new Date(tanggal.getFullYear(), tanggal.getMonth() + 1, 1);
-  } else if (jenis === "tahunan") {
-    awal = new Date(tanggal.getFullYear(), 0, 1);
-    akhir = new Date(tanggal.getFullYear() + 1, 0, 1);
+const filterSelect = document.createElement("select");
+filterSelect.className = "border border-gray-300 rounded p-2";
+filterSelect.innerHTML = `
+  <option value="harian">Harian</option>
+  <option value="bulanan">Bulanan</option>
+  <option value="tahunan">Tahunan</option>
+`;
+
+const btnHitung = document.createElement("button");
+btnHitung.textContent = "Hitung Profit";
+btnHitung.className = "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700";
+
+filterContainer.appendChild(filterSelect);
+filterContainer.appendChild(btnHitung);
+ringkasan.before(filterContainer);
+
+// Navbar
+const navBar = document.createElement("nav");
+navBar.className = "bg-white shadow-md py-4 mb-8";
+navBar.innerHTML = `
+  <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
+    <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
+    <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
+    <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
+    <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
+    <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit</a>
+    <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
+  </div>
+`;
+document.body.prepend(navBar);
+
+function getDateRange(mode) {
+  const now = new Date();
+  let start, end;
+  if (mode === "harian") {
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  } else if (mode === "bulanan") {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+  } else if (mode === "tahunan") {
+    start = new Date(now.getFullYear(), 0, 1);
+    end = new Date(now.getFullYear() + 1, 0, 1);
   }
+  return { start, end };
+}
 
-  let totalJual = 0;
-  let totalBeli = 0;
+function formatRupiah(angka) {
+  return new Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR"
+  }).format(angka);
+}
+
+btnHitung.onclick = async () => {
+  const mode = filterSelect.value;
+  const { start, end } = getDateRange(mode);
+
+  let totalPenjualan = 0;
   let totalPengeluaran = 0;
+  let totalModal = 0;
 
-  const penjualanQuery = query(
+  // Ambil data penjualan
+  const qPenjualan = query(
     collection(db, "penjualan"),
-    where("timestamp", ">=", Timestamp.fromDate(awal)),
-    where("timestamp", "<", Timestamp.fromDate(akhir))
+    where("timestamp", ">=", Timestamp.fromDate(start)),
+    where("timestamp", "<", Timestamp.fromDate(end))
   );
-  const penjualanSnap = await getDocs(penjualanQuery);
-  penjualanSnap.forEach(doc => {
-    const data = doc.data();
-    totalJual += data.total;
-    totalBeli += (data.hargaBeli || 0) * (data.jumlah || 0); // asumsikan 'hargaBeli' disimpan di data
+  const snapPenjualan = await getDocs(qPenjualan);
+  snapPenjualan.forEach(doc => {
+    const d = doc.data();
+    totalPenjualan += d.total;
+    totalModal += (d.hargaBeli || 0) * (d.jumlah || 1);
   });
 
-  const pengeluaranQuery = query(
+  // Ambil data pengeluaran
+  const qPengeluaran = query(
     collection(db, "pengeluaran"),
-    where("timestamp", ">=", Timestamp.fromDate(awal)),
-    where("timestamp", "<", Timestamp.fromDate(akhir))
+    where("timestamp", ">=", Timestamp.fromDate(start)),
+    where("timestamp", "<", Timestamp.fromDate(end))
   );
-  const pengeluaranSnap = await getDocs(pengeluaranQuery);
-  pengeluaranSnap.forEach(doc => {
-    totalPengeluaran += doc.data().jumlah || 0;
+  const snapPengeluaran = await getDocs(qPengeluaran);
+  snapPengeluaran.forEach(doc => {
+    totalPengeluaran += doc.data().jumlah;
   });
 
-  const profitKotor = totalJual - totalBeli;
+  const profitKotor = totalPenjualan - totalModal;
   const profitBersih = profitKotor - totalPengeluaran;
 
   ringkasan.innerHTML = `
-    <p>Total Penjualan: <strong>Rp${totalJual.toLocaleString("id-ID")}</strong></p>
-    <p>Modal (Harga Beli): <strong>Rp${totalBeli.toLocaleString("id-ID")}</strong></p>
-    <p>Total Pengeluaran: <strong>Rp${totalPengeluaran.toLocaleString("id-ID")}</strong></p>
-    <hr class="my-2" />
-    <p>Profit Kotor (Harga Jual - Harga Beli): <strong class="text-blue-600">Rp${profitKotor.toLocaleString("id-ID")}</strong></p>
-    <p>Profit Bersih (Profit Kotor - Pengeluaran): <strong class="text-green-600">Rp${profitBersih.toLocaleString("id-ID")}</strong></p>
+    <p class="mb-2">Periode: <strong class="text-blue-600 capitalize">${mode}</strong></p>
+    <p>Total Penjualan: <strong>${formatRupiah(totalPenjualan)}</strong></p>
+    <p>Total Modal (Harga Beli): <strong>${formatRupiah(totalModal)}</strong></p>
+    <p>Profit Kotor: <strong class="text-yellow-600">${formatRupiah(profitKotor)}</strong></p>
+    <p>Total Pengeluaran Lain: <strong>${formatRupiah(totalPengeluaran)}</strong></p>
+    <p class="mt-2 text-lg">Profit Bersih: <strong class="text-green-600">${formatRupiah(profitBersih)}</strong></p>
   `;
 };

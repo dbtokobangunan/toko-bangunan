@@ -10,27 +10,89 @@ import {
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
 const form = document.getElementById("formTransaksi");
+const barangSelect = document.getElementById("pilihBarang");
+const jumlahInput = document.getElementById("jumlahBarang");
+const hargaInput = document.getElementById("hargaBarang");
+const uangInput = document.getElementById("uangDiterima");
 const daftar = document.getElementById("daftarTransaksi");
-const barang = document.getElementById("pilihBarang");
-const jumlah = document.getElementById("jumlahBarang");
-const harga = document.getElementById("hargaBarang");
-const uang = document.getElementById("uangDiterima");
-const totalLabel = document.getElementById("totalBayar");
-const kembalianLabel = document.getElementById("kembalian");
 const btnExport = document.getElementById("btnExport");
+const btnHitung = document.getElementById("btnHitung");
+
+let selectedBarang = null;
+let totalTransaksi = 0;
+let kembalian = 0;
 
 function formatRupiah(angka) {
   return new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR" }).format(angka);
 }
 
 async function muatBarang() {
-  barang.innerHTML = '<option value="">-- Pilih Barang --</option>';
-  const data = await getDocs(collection(db, "barang"));
-  data.forEach(doc => {
-    const d = doc.data();
-    barang.innerHTML += `<option value="${doc.id}">${d.nama}</option>`;
+  barangSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
+  const snapshot = await getDocs(collection(db, "barang"));
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
+    const option = document.createElement("option");
+    option.value = docSnap.id;
+    option.textContent = data.nama;
+    option.dataset.hargaJual = data.hargaJual || 0;
+    option.dataset.hargaBeli = data.hargaBeli || 0;
+    barangSelect.appendChild(option);
   });
 }
+
+// Set harga jual otomatis saat barang dipilih
+barangSelect.addEventListener("change", () => {
+  const selectedOption = barangSelect.options[barangSelect.selectedIndex];
+  const hargaJual = selectedOption.dataset.hargaJual;
+  hargaInput.value = hargaJual || '';
+});
+
+btnHitung.addEventListener("click", () => {
+  const jumlah = parseInt(jumlahInput.value);
+  const harga = parseInt(hargaInput.value);
+  const uang = parseInt(uangInput.value);
+
+  if (!barangSelect.value || isNaN(jumlah) || jumlah <= 0 || isNaN(harga) || harga <= 0 || isNaN(uang)) {
+    alert("Mohon isi data dengan benar sebelum menghitung.");
+    return;
+  }
+
+  totalTransaksi = jumlah * harga;
+  kembalian = uang - totalTransaksi;
+
+  alert(`Total Bayar: ${formatRupiah(totalTransaksi)}\nKembalian: ${formatRupiah(kembalian)}`);
+});
+
+form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const barangId = barangSelect.value;
+  const jumlah = parseInt(jumlahInput.value);
+  const harga = parseInt(hargaInput.value);
+  const uang = parseInt(uangInput.value);
+  const selectedOption = barangSelect.options[barangSelect.selectedIndex];
+  const hargaBeli = parseInt(selectedOption.dataset.hargaBeli || 0);
+  const namaBarang = selectedOption.textContent;
+
+  if (!barangId || jumlah <= 0 || harga <= 0 || uang < totalTransaksi) {
+    alert("Isi data dengan benar sebelum menyimpan.");
+    return;
+  }
+
+  await addDoc(collection(db, "penjualan"), {
+    barangId,
+    namaBarang,
+    jumlah,
+    hargaJual: harga,
+    hargaBeli,
+    total: totalTransaksi,
+    timestamp: Timestamp.now()
+  });
+
+  alert("Transaksi berhasil disimpan.");
+  form.reset();
+  tampilkanTransaksiHariIni();
+});
 
 async function tampilkanTransaksiHariIni() {
   daftar.innerHTML = "";
@@ -42,8 +104,8 @@ async function tampilkanTransaksiHariIni() {
   const snapshot = await getDocs(collection(db, "penjualan"));
   const dataExport = [];
 
-  snapshot.forEach(doc => {
-    const data = doc.data();
+  snapshot.forEach(docSnap => {
+    const data = docSnap.data();
     const waktu = data.timestamp?.toDate?.();
     if (waktu >= now && waktu < besok) {
       daftar.innerHTML += `
@@ -70,40 +132,10 @@ async function tampilkanTransaksiHariIni() {
       XLSX.utils.book_append_sheet(wb, sheet, "Transaksi");
       XLSX.writeFile(wb, "transaksi-harian.xlsx");
     };
+  } else {
+    btnExport.classList.add("hidden");
   }
 }
-
-form.addEventListener("submit", async (e) => {
-  e.preventDefault();
-
-  const barangId = barang.value;
-  const jml = parseInt(jumlah.value);
-  const hrg = parseInt(harga.value);
-  const bayar = parseInt(uang.value);
-  const total = jml * hrg;
-  const kembali = bayar - total;
-
-  if (!barangId || jml <= 0 || hrg <= 0 || bayar < total) return alert("Isi data dengan benar");
-
-  const barangDoc = await getDoc(doc(db, "barang", barangId));
-  const namaBarang = barangDoc.data().nama;
-
-  await addDoc(collection(db, "penjualan"), {
-    barangId,
-    namaBarang,
-    jumlah: jml,
-    harga: hrg,
-    total,
-    timestamp: Timestamp.now()
-  });
-
-  totalLabel.textContent = formatRupiah(total);
-  kembalianLabel.textContent = formatRupiah(kembali);
-
-  alert("Transaksi berhasil");
-  form.reset();
-  tampilkanTransaksiHariIni();
-});
 
 window.addEventListener("DOMContentLoaded", () => {
   muatBarang();
