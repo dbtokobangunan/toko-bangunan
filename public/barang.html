@@ -3,15 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Manajemen Barang - Toko Bangunan</title>
-  <script type="module" src="/js/firebase-config.js" defer></script>
-<script type="module" src="/js/app-barang.js" defer></script>
-<script type="module" src="/js/app.js"></script>
-
-  <script src="https://cdn.sheetjs.com/xlsx-latest/package/xlsx.full.min.js"></script>
+  <title>Manajemen Barang</title>
+  <script type="module" src="/js/firebase-config.js"></script>
+  <script type="module" src="/js/app-barang.js" defer></script>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
 <body class="bg-gray-100 text-gray-900 font-sans">
+  <!-- Navbar -->
   <nav class="bg-white shadow-md py-4 mb-6">
     <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4 text-sm sm:text-base">
       <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
@@ -24,20 +22,15 @@
     </div>
   </nav>
 
-  <div class="md:col-span-2">
-    <h1 class="text-2xl font-bold mb-4">Manajemen Data Barang</h1>
-
-    <!-- Form Tambah/Edit Barang -->
-    <div class="bg-white rounded-lg shadow p-6 mb-8">
-      <h2 class="text-xl font-semibold mb-4" id="formTitle">Tambah Barang</h2>
-      <form id="barangForm" class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <input type="hidden" id="barangId">
-        <div>
-          <label class="block text-sm font-medium">Nama Barang</label>
-          <input type="text" id="namaBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Kategori</label>
+  <div class="max-w-3xl mx-auto p-6 bg-white rounded shadow">
+    <h1 class="text-2xl font-bold mb-6">Manajemen Data Barang</h1>
+    <form id="barangForm" class="space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Nama Barang</label>
+        <input id="namaBarang" type="text" class="w-full border p-2 rounded" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Kategori</label>
           <select id="kategoriBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
             <option value="">-- Pilih Kategori --</option>
             <option>Semen</option>
@@ -49,44 +42,41 @@
             <option>Listrik & Plumbing</option>
             <option>Lain-lain</option>
           </select>
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Harga Beli</label>
-          <input type="number" id="hargaBeli" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Harga Jual</label>
-          <input type="number" id="hargaJual" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-        </div>
-        <div>
-          <label class="block text-sm font-medium">Stok Awal</label>
-          <input type="number" id="stokBarang" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
-        </div>
-        <div class="md:col-span-2">
-          <button type="submit" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
-            Simpan Barang
-          </button>
-          <button type="button" id="batalEdit" class="mt-4 ml-2 text-sm text-gray-500 hover:underline hidden">Batal Edit</button>
-        </div>
-      </form>
-    </div>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Harga Beli</label>
+        <input id="hargaBeli" type="number" class="w-full border p-2 rounded" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Harga Jual</label>
+        <input id="hargaJual" type="number" class="w-full border p-2 rounded" required>
+      </div>
+      <div>
+        <label class="block text-sm font-medium">Stok Awal</label>
+        <input id="stokBarang" type="number" class="w-full border p-2 rounded" required>
+      </div>
+      <div class="flex justify-between">
+        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan Barang</button>
+        <button id="batalEdit" type="button" class="bg-gray-400 text-white px-4 py-2 rounded hidden">Batal</button>
+      </div>
+    </form>
+  </div>
 
-    <!-- Daftar Barang -->
-    <div class="bg-white rounded-lg shadow p-6">
-      <h2 class="text-xl font-semibold mb-4">Daftar Barang</h2>
-      <table class="w-full table-auto border">
-        <thead class="bg-gray-200">
-          <tr>
-            <th class="px-4 py-2 text-left">Nama</th>
-            <th class="px-4 py-2 text-left">Kategori</th>
-            <th class="px-4 py-2 text-left">Harga</th>
-            <th class="px-4 py-2 text-left">Stok</th>
-            <th class="px-4 py-2">Aksi</th>
-          </tr>
-        </thead>
-        <tbody id="daftarBarang"></tbody>
-      </table>
-    </div>
+  <div class="max-w-5xl mx-auto mt-8 px-6">
+    <h2 class="text-xl font-semibold mb-4">Daftar Barang</h2>
+    <table class="w-full table-auto border text-sm bg-white shadow rounded">
+      <thead class="bg-gray-200 text-center">
+        <tr>
+          <th class="px-4 py-2">Nama</th>
+          <th class="px-4 py-2">Kategori</th>
+          <th class="px-4 py-2">Harga Beli</th>
+          <th class="px-4 py-2">Harga Jual</th>
+          <th class="px-4 py-2">Stok</th>
+          <th class="px-4 py-2">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="daftarBarang" class="text-center"></tbody>
+    </table>
   </div>
 </body>
 </html>
