@@ -27,27 +27,33 @@ function formatRupiah(angka) {
 }
 
 async function muatBarang() {
+  const debug = document.getElementById("debug");
   barangSelect.innerHTML = '<option value="">-- Pilih Barang --</option>';
-  const snapshot = await getDocs(collection(db, "barang"));
-  
-  if (snapshot.empty) {
-    console.log("Tidak ada data barang ditemukan");
-  }
+  try {
+    const snapshot = await getDocs(collection(db, "barang"));
+    if (snapshot.empty) {
+      debug.textContent = "Tidak ada data barang di database.";
+    }
 
-  snapshot.forEach(docSnap => {
-    const data = docSnap.data();
-    console.log("Data barang:", data); // Tambahkan log ini
-
-    if (data.nama) {
+    snapshot.forEach(docSnap => {
+      const data = docSnap.data();
+      if (!data.nama) {
+        console.warn("Barang tanpa nama:", docSnap.id);
+        return;
+      }
       const option = document.createElement("option");
       option.value = docSnap.id;
       option.textContent = data.nama;
       option.dataset.hargaJual = data.hargaJual || 0;
       option.dataset.hargaBeli = data.hargaBeli || 0;
       barangSelect.appendChild(option);
-    }
-  });
+    });
+  } catch (err) {
+    debug.textContent = "Gagal memuat barang: " + err.message;
+    console.error(err);
+  }
 }
+
 
 
 // Set harga jual otomatis saat barang dipilih
