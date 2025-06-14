@@ -36,13 +36,17 @@
           <label class="block text-sm font-medium">Kategori</label>
           <select id="kategoriBarang" class="w-full border p-2 rounded" required>
             <option value="">-- Pilih Kategori --</option>
+            <option>Remikan</option>
+            <option>Kaso</option>
+            <option>Papan</option>
             <option>Semen</option>
-            <option>Pasir & Batu</option>
-            <option>Besi & Baja</option>
-            <option>Kayu</option>
-            <option>Cat</option>
-            <option>Alat & Perlengkapan</option>
-            <option>Listrik & Plumbing</option>
+            <option>Asbes</option>
+            <option>Kalsibot</option>
+            <option>Kalsirata</option>
+            <option>Besi</option>
+            <option>Begel</option>
+            <option>Bendrat</option>
+            <option>Paku</option>
             <option>Lain-lain</option>
           </select>
         </div>
@@ -65,25 +69,28 @@
       </form>
     </section>
 
-    <!-- Tabel Data Barang -->
-    <section class="mt-10">
-      <h2 class="text-lg font-bold mb-4">Daftar Barang</h2>
-      <div class="overflow-x-auto border rounded bg-white shadow">
-        <table class="min-w-full table-auto text-sm">
-          <thead class="bg-gray-200 text-left">
-            <tr>
-              <th class="px-4 py-2">Nama</th>
-              <th class="px-4 py-2">Kategori</th>
-              <th class="px-4 py-2">Harga Beli</th>
-              <th class="px-4 py-2">Harga Jual</th>
-              <th class="px-4 py-2">Stok</th>
-              <th class="px-4 py-2">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="daftarBarang"></tbody>
-        </table>
-      </div>
-    </section>
+<!-- Tabel Data Barang -->
+<section class="mt-10">
+  <h2 class="text-lg font-bold mb-4">Daftar Barang</h2>
+  <div class="overflow-x-auto">
+    <table class="min-w-full table-auto text-sm border border-gray-300 bg-white shadow rounded">
+      <thead class="bg-gray-200 text-left">
+        <tr>
+          <th class="px-4 py-2 border border-gray-300">Nama</th>
+          <th class="px-4 py-2 border border-gray-300">Kategori</th>
+          <th class="px-4 py-2 border border-gray-300">Harga Beli</th>
+          <th class="px-4 py-2 border border-gray-300">Harga Jual</th>
+          <th class="px-4 py-2 border border-gray-300">Stok</th>
+          <th class="px-4 py-2 border border-gray-300">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="daftarBarang">
+        <!-- baris-baris akan diisi dari JS -->
+      </tbody>
+    </table>
+  </div>
+</section>
+
   </main>
 
 </body>
