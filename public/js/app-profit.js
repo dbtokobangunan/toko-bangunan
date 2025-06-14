@@ -1,4 +1,3 @@
-// js/app-profit.js
 import { db } from './firebase-config.js';
 import {
   collection,
@@ -10,56 +9,59 @@ import {
 
 const ringkasan = document.getElementById("ringkasanProfit");
 
-const navBar = document.createElement("nav");
-navBar.className = "bg-white shadow-md py-4 mb-8";
-navBar.innerHTML = `
-  <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
-    <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
-    <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
-    <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
-    <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
-    <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit Harian</a>
-    <a href="profit-bulanan.html" class="text-blue-600 font-semibold hover:underline">Profit Bulanan</a>
-    <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
-  </div>
-`;
-document.body.prepend(navBar);
+window.hitungProfit = async function () {
+  const jenis = document.getElementById("jenisProfit").value;
+  const tanggal = new Date(document.getElementById("tanggalProfit").value);
+  if (isNaN(tanggal)) return alert("Harap pilih tanggal");
 
-window.hitungProfitHarian = async function () {
-  const now = new Date();
-  const awalHari = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const akhirHari = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  let awal, akhir;
+  if (jenis === "harian") {
+    awal = new Date(tanggal);
+    akhir = new Date(tanggal);
+    akhir.setDate(akhir.getDate() + 1);
+  } else if (jenis === "bulanan") {
+    awal = new Date(tanggal.getFullYear(), tanggal.getMonth(), 1);
+    akhir = new Date(tanggal.getFullYear(), tanggal.getMonth() + 1, 1);
+  } else if (jenis === "tahunan") {
+    awal = new Date(tanggal.getFullYear(), 0, 1);
+    akhir = new Date(tanggal.getFullYear() + 1, 0, 1);
+  }
 
-  let totalPenjualan = 0;
+  let totalJual = 0;
+  let totalBeli = 0;
   let totalPengeluaran = 0;
 
-  // Ambil total penjualan hari ini
-  const qPenjualan = query(
+  const penjualanQuery = query(
     collection(db, "penjualan"),
-    where("timestamp", ">=", Timestamp.fromDate(awalHari)),
-    where("timestamp", "<", Timestamp.fromDate(akhirHari))
+    where("timestamp", ">=", Timestamp.fromDate(awal)),
+    where("timestamp", "<", Timestamp.fromDate(akhir))
   );
-  const snapPenjualan = await getDocs(qPenjualan);
-  snapPenjualan.forEach(doc => {
-    totalPenjualan += doc.data().total;
+  const penjualanSnap = await getDocs(penjualanQuery);
+  penjualanSnap.forEach(doc => {
+    const data = doc.data();
+    totalJual += data.total;
+    totalBeli += (data.hargaBeli || 0) * (data.jumlah || 0); // asumsikan 'hargaBeli' disimpan di data
   });
 
-  // Ambil total pengeluaran hari ini
-  const qPengeluaran = query(
+  const pengeluaranQuery = query(
     collection(db, "pengeluaran"),
-    where("timestamp", ">=", Timestamp.fromDate(awalHari)),
-    where("timestamp", "<", Timestamp.fromDate(akhirHari))
+    where("timestamp", ">=", Timestamp.fromDate(awal)),
+    where("timestamp", "<", Timestamp.fromDate(akhir))
   );
-  const snapPengeluaran = await getDocs(qPengeluaran);
-  snapPengeluaran.forEach(doc => {
-    totalPengeluaran += doc.data().jumlah;
+  const pengeluaranSnap = await getDocs(pengeluaranQuery);
+  pengeluaranSnap.forEach(doc => {
+    totalPengeluaran += doc.data().jumlah || 0;
   });
 
-  const profit = totalPenjualan - totalPengeluaran;
+  const profitKotor = totalJual - totalBeli;
+  const profitBersih = profitKotor - totalPengeluaran;
 
   ringkasan.innerHTML = `
-    <p>Total Penjualan: <strong>Rp${totalPenjualan}</strong></p>
-    <p>Total Pengeluaran: <strong>Rp${totalPengeluaran}</strong></p>
-    <p>Profit Hari Ini: <strong class="text-green-600">Rp${profit}</strong></p>
+    <p>Total Penjualan: <strong>Rp${totalJual.toLocaleString("id-ID")}</strong></p>
+    <p>Modal (Harga Beli): <strong>Rp${totalBeli.toLocaleString("id-ID")}</strong></p>
+    <p>Total Pengeluaran: <strong>Rp${totalPengeluaran.toLocaleString("id-ID")}</strong></p>
+    <hr class="my-2" />
+    <p>Profit Kotor (Harga Jual - Harga Beli): <strong class="text-blue-600">Rp${profitKotor.toLocaleString("id-ID")}</strong></p>
+    <p>Profit Bersih (Profit Kotor - Pengeluaran): <strong class="text-green-600">Rp${profitBersih.toLocaleString("id-ID")}</strong></p>
   `;
 };
