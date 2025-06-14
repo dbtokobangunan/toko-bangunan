@@ -29,20 +29,20 @@ filterContainer.appendChild(filterSelect);
 filterContainer.appendChild(btnHitung);
 ringkasan.before(filterContainer);
 
-// Navbar
-const navBar = document.createElement("nav");
-navBar.className = "bg-white shadow-md py-4 mb-8";
-navBar.innerHTML = `
-  <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
-    <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
-    <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
-    <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
-    <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
-    <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit</a>
-    <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
-  </div>
-`;
-document.body.prepend(navBar);
+// // Navbar
+// const navBar = document.createElement("nav");
+// navBar.className = "bg-white shadow-md py-4 mb-8";
+// navBar.innerHTML = `
+//   <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
+//     <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
+//     <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
+//     <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
+//     <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
+//     <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit</a>
+//     <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
+//   </div>
+// `;
+// document.body.prepend(navBar);
 
 function getDateRange(mode) {
   const now = new Date();
