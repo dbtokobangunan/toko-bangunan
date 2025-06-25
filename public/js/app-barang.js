@@ -30,7 +30,9 @@ async function tampilkanBarang() {
       <td class="px-4 py-2">Rp${data.hargaJual || 0}</td>
       <td class="px-4 py-2">${data.stok ?? 0}</td>
       <td class="px-4 py-2 text-center">
-        <button class="text-blue-600 hover:underline mr-2" onclick="editBarang('${docSnap.id}', '${data.nama}', '${data.kategori}', ${data.harga}, ${data.stok})">Edit</button>
+        <button class="text-blue-600 hover:underline mr-2" 
+  onclick="editBarang('${docSnap.id}', '${data.nama}', '${data.kategori}', ${data.hargaBeli}, ${data.hargaJual}, ${data.stok})">Edit</button>
+
         <button class="text-red-600 hover:underline" onclick="hapusBarang('${docSnap.id}')">Hapus</button>
       </td>`;
     daftarBarang.appendChild(tr);
@@ -73,7 +75,8 @@ const data = { nama, kategori, hargaBeli, hargaJual, stok };
 });
 
 // Fungsi edit
-window.editBarang = function (id, nama, kategori, harga, stok) {
+window.editBarang = function (id, nama, kategori, hargaBeli, hargaJual, stok) {
+ 
   document.getElementById("namaBarang").value = nama;
   document.getElementById("kategoriBarang").value = kategori;
   document.getElementById("hargaBeli").value = hargaBeli;
