@@ -91,6 +91,12 @@ form.addEventListener("submit", async (e) => {
   const hargaBeli = parseInt(selectedOption.dataset.hargaBeli || 0);
   const namaBarang = selectedOption.textContent;
 
+  // Hitung ulang jika belum ditekan "Hitung"
+  if (totalTransaksi === 0 || kembalian === 0 || totalTransaksi !== jumlah * harga) {
+    totalTransaksi = jumlah * harga;
+    kembalian = uang - totalTransaksi;
+  }
+
   if (!barangId || jumlah <= 0 || harga <= 0 || uang < totalTransaksi) {
     alert("Isi data dengan benar sebelum menyimpan.");
     return;
@@ -106,18 +112,25 @@ form.addEventListener("submit", async (e) => {
     timestamp: Timestamp.now()
   });
 
+  // Update stok
   const barangRef = doc(db, "barang", barangId);
-const barangSnap = await getDoc(barangRef);
+  const barangSnap = await getDoc(barangRef);
 
-if (barangSnap.exists()) {
-  const dataBarang = barangSnap.data();
-  const stokBaru = (dataBarang.stok || 0) - jumlah;
+  if (barangSnap.exists()) {
+    const dataBarang = barangSnap.data();
+    const stokBaru = (dataBarang.stok || 0) - jumlah;
+    if (stokBaru < 0) {
+      alert("Stok tidak mencukupi.");
+      return;
+    }
+    await updateDoc(barangRef, { stok: stokBaru });
+  }
 
-  await updateDoc(barangRef, { stok: stokBaru });
-}
-
-  alert("Transaksi berhasil disimpan.");
+  alert(`Transaksi berhasil disimpan. Kembalian: ${formatRupiah(kembalian)}`);
   form.reset();
+  hargaInput.value = "";
+  totalTransaksi = 0;
+  kembalian = 0;
   tampilkanTransaksiHariIni();
 });
 
