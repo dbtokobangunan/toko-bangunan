@@ -1,0 +1,12 @@
+{
+  "name": "toko-bangunan",
+  "version": "1.0.0",
+  "description": "Aplikasi kasir toko bangunan",
+  "scripts": {
+    "build": "echo 'No build step needed'",
+    "start": "serve ."
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}
