@@ -96,19 +96,30 @@ form.addEventListener("submit", async (e) => {
   }
 
   await addDoc(collection(db, "penjualan"), {
-    barangId,
-    namaBarang,
-    jumlah,
-    hargaJual: harga,
-    hargaBeli,
-    total: totalTransaksi,
-    timestamp: Timestamp.now()
-  });
-
-  alert("Transaksi berhasil disimpan.");
-  form.reset();
-  tampilkanTransaksiHariIni();
+  barangId,
+  namaBarang,
+  jumlah,
+  hargaJual: harga,
+  hargaBeli,
+  total: totalTransaksi,
+  timestamp: Timestamp.now()
 });
+
+// Kurangi stok barang
+const barangRef = doc(db, "barang", barangId);
+const barangSnap = await getDoc(barangRef);
+
+if (barangSnap.exists()) {
+  const dataBarang = barangSnap.data();
+  const stokBaru = (dataBarang.stok || 0) - jumlah;
+
+  await updateDoc(barangRef, { stok: stokBaru });
+}
+
+alert("Transaksi berhasil disimpan.");
+form.reset();
+tampilkanTransaksiHariIni();
+
 
 async function tampilkanTransaksiHariIni() {
   daftar.innerHTML = "";
