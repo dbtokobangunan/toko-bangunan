@@ -58,10 +58,11 @@ async function muatBarang() {
 
 // Set harga jual otomatis saat barang dipilih
 barangSelect.addEventListener("change", () => {
-  const selectedOption = barangSelect.options[barangSelect.selectedIndex];
-  const hargaJual = selectedOption.dataset.hargaJual;
-  hargaInput.value = hargaJual || '';
+  const selectedOption = barangSelect.selectedOptions[0];
+  const hargaJual = parseInt(selectedOption.dataset.hargaJual || 0);
+  hargaInput.value = hargaJual;
 });
+
 
 btnHitung.addEventListener("click", () => {
   const jumlah = parseInt(jumlahInput.value);
