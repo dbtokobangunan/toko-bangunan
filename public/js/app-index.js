@@ -165,16 +165,17 @@ async function tampilkanTransaksiHariIni() {
   });
 
   if (dataExport.length > 0) {
-    btnExport.classList.remove("hidden");
-    btnExport.onclick = () => {
-      const sheet = XLSX.utils.json_to_sheet(dataExport);
-      const wb = XLSX.utils.book_new();
-      XLSX.utils.book_append_sheet(wb, sheet, "Transaksi");
-      XLSX.writeFile(wb, "transaksi-harian.xlsx");
-    };
-  } else {
-    btnExport.classList.add("hidden");
-  }
+  btnExport.classList.remove("hidden");
+  btnExport.onclick = () => {
+    const sheet = XLSX.utils.json_to_sheet(dataExport);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, sheet, "Transaksi");
+    XLSX.writeFile(wb, "transaksi-harian.xlsx");
+  };
+} else {
+  btnExport.classList.add("hidden");
+}
+
 }
 
 window.addEventListener("DOMContentLoaded", () => {
