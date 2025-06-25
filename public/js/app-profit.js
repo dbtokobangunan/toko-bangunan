@@ -7,22 +7,21 @@ import {
   Timestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-function getDateRange(mode, tanggal) {
+const ringkasan = document.getElementById("ringkasanProfit");
+
+function getDateRange(mode) {
+  const now = new Date();
   let start, end;
-
   if (mode === "harian") {
-    start = new Date(tanggal);
-    start.setHours(0, 0, 0, 0);
-    end = new Date(start);
-    end.setDate(end.getDate() + 1);
+    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
   } else if (mode === "bulanan") {
-    start = new Date(tanggal.getFullYear(), tanggal.getMonth(), 1);
-    end = new Date(tanggal.getFullYear(), tanggal.getMonth() + 1, 1);
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+    end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
   } else if (mode === "tahunan") {
-    start = new Date(tanggal.getFullYear(), 0, 1);
-    end = new Date(tanggal.getFullYear() + 1, 0, 1);
+    start = new Date(now.getFullYear(), 0, 1);
+    end = new Date(now.getFullYear() + 1, 0, 1);
   }
-
   return { start, end };
 }
 
@@ -33,25 +32,23 @@ function formatRupiah(angka) {
   }).format(angka);
 }
 
-// INI YANG PENTING
+// Fungsi global agar bisa dipanggil dari HTML
 window.hitungProfit = async function hitungProfit() {
   const mode = document.getElementById("jenisProfit").value;
-  const tglInput = document.getElementById("tanggalProfit").value;
-  const ringkasan = document.getElementById("ringkasanProfit");
+  const tanggal = new Date(document.getElementById("tanggalProfit").value);
 
-  if (!tglInput) {
-    ringkasan.innerHTML = `<p class="text-red-600">Tanggal belum dipilih.</p>`;
-    return;
+  const { start, end } = getDateRange(mode);
+  // Override start & end jika harian
+  if (mode === "harian" && !isNaN(tanggal)) {
+    start.setFullYear(tanggal.getFullYear(), tanggal.getMonth(), tanggal.getDate());
+    start.setHours(0, 0, 0, 0);
+    end.setTime(start.getTime() + 24 * 60 * 60 * 1000);
   }
-
-  const tanggal = new Date(tglInput);
-  const { start, end } = getDateRange(mode, tanggal);
 
   let totalPenjualan = 0;
   let totalModal = 0;
   let totalPengeluaran = 0;
 
-  // Penjualan
   const qPenjualan = query(
     collection(db, "penjualan"),
     where("timestamp", ">=", Timestamp.fromDate(start)),
@@ -64,7 +61,6 @@ window.hitungProfit = async function hitungProfit() {
     totalModal += (d.hargaBeli || 0) * (d.jumlah || 1);
   });
 
-  // Pengeluaran
   const qPengeluaran = query(
     collection(db, "pengeluaran"),
     where("timestamp", ">=", Timestamp.fromDate(start)),
@@ -86,4 +82,4 @@ window.hitungProfit = async function hitungProfit() {
     <p>Total Pengeluaran Lain: <strong>${formatRupiah(totalPengeluaran)}</strong></p>
     <p class="mt-2 text-lg">Profit Bersih: <strong class="text-green-600">${formatRupiah(profitBersih)}</strong></p>
   `;
-}
+};
