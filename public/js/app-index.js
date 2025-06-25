@@ -119,6 +119,7 @@ if (barangSnap.exists()) {
 alert("Transaksi berhasil disimpan.");
 form.reset();
 tampilkanTransaksiHariIni();
+});
 
 
 async function tampilkanTransaksiHariIni() {
