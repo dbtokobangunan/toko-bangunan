@@ -7,56 +7,22 @@ import {
   Timestamp
 } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore.js";
 
-const ringkasan = document.getElementById("ringkasanProfit");
-
-// Buat dropdown filter
-const filterContainer = document.createElement("div");
-filterContainer.className = "mb-4 flex gap-4 items-center";
-
-const filterSelect = document.createElement("select");
-filterSelect.className = "border border-gray-300 rounded p-2";
-filterSelect.innerHTML = `
-  <option value="harian">Harian</option>
-  <option value="bulanan">Bulanan</option>
-  <option value="tahunan">Tahunan</option>
-`;
-
-const btnHitung = document.createElement("button");
-btnHitung.textContent = "Hitung Profit";
-btnHitung.className = "bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700";
-
-filterContainer.appendChild(filterSelect);
-filterContainer.appendChild(btnHitung);
-ringkasan.before(filterContainer);
-
-// // Navbar
-// const navBar = document.createElement("nav");
-// navBar.className = "bg-white shadow-md py-4 mb-8";
-// navBar.innerHTML = `
-//   <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
-//     <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
-//     <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
-//     <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
-//     <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
-//     <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit</a>
-//     <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
-//   </div>
-// `;
-// document.body.prepend(navBar);
-
-function getDateRange(mode) {
-  const now = new Date();
+function getDateRange(mode, tanggal) {
   let start, end;
+
   if (mode === "harian") {
-    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-    end = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+    start = new Date(tanggal);
+    start.setHours(0, 0, 0, 0);
+    end = new Date(start);
+    end.setDate(end.getDate() + 1);
   } else if (mode === "bulanan") {
-    start = new Date(now.getFullYear(), now.getMonth(), 1);
-    end = new Date(now.getFullYear(), now.getMonth() + 1, 1);
+    start = new Date(tanggal.getFullYear(), tanggal.getMonth(), 1);
+    end = new Date(tanggal.getFullYear(), tanggal.getMonth() + 1, 1);
   } else if (mode === "tahunan") {
-    start = new Date(now.getFullYear(), 0, 1);
-    end = new Date(now.getFullYear() + 1, 0, 1);
+    start = new Date(tanggal.getFullYear(), 0, 1);
+    end = new Date(tanggal.getFullYear() + 1, 0, 1);
   }
+
   return { start, end };
 }
 
@@ -67,15 +33,25 @@ function formatRupiah(angka) {
   }).format(angka);
 }
 
-btnHitung.onclick = async () => {
-  const mode = filterSelect.value;
-  const { start, end } = getDateRange(mode);
+// INI YANG PENTING
+window.hitungProfit = async function hitungProfit() {
+  const mode = document.getElementById("jenisProfit").value;
+  const tglInput = document.getElementById("tanggalProfit").value;
+  const ringkasan = document.getElementById("ringkasanProfit");
+
+  if (!tglInput) {
+    ringkasan.innerHTML = `<p class="text-red-600">Tanggal belum dipilih.</p>`;
+    return;
+  }
+
+  const tanggal = new Date(tglInput);
+  const { start, end } = getDateRange(mode, tanggal);
 
   let totalPenjualan = 0;
-  let totalPengeluaran = 0;
   let totalModal = 0;
+  let totalPengeluaran = 0;
 
-  // Ambil data penjualan
+  // Penjualan
   const qPenjualan = query(
     collection(db, "penjualan"),
     where("timestamp", ">=", Timestamp.fromDate(start)),
@@ -88,7 +64,7 @@ btnHitung.onclick = async () => {
     totalModal += (d.hargaBeli || 0) * (d.jumlah || 1);
   });
 
-  // Ambil data pengeluaran
+  // Pengeluaran
   const qPengeluaran = query(
     collection(db, "pengeluaran"),
     where("timestamp", ">=", Timestamp.fromDate(start)),
@@ -110,4 +86,4 @@ btnHitung.onclick = async () => {
     <p>Total Pengeluaran Lain: <strong>${formatRupiah(totalPengeluaran)}</strong></p>
     <p class="mt-2 text-lg">Profit Bersih: <strong class="text-green-600">${formatRupiah(profitBersih)}</strong></p>
   `;
-};
+}
