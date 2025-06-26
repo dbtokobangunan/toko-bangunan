@@ -4,6 +4,7 @@ import {
   getDocs,
   addDoc,
   updateDoc,
+  deleteDoc,
   doc,
   getDoc,
   Timestamp
@@ -145,16 +146,40 @@ async function tampilkanTransaksiHariIni() {
   const dataExport = [];
 
   snapshot.forEach(docSnap => {
+      // Tambahkan event listener ke semua tombol hapus
+  const tombolHapus = document.querySelectorAll(".hapus-btn");
+  tombolHapus.forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const id = btn.dataset.id;
+      const konfirmasi = confirm("Yakin ingin menghapus transaksi ini?");
+      if (!konfirmasi) return;
+
+      try {
+        await deleteDoc(doc(db, "penjualan", id));
+        alert("Transaksi berhasil dihapus.");
+        tampilkanTransaksiHariIni(); // refresh data
+      } catch (err) {
+        console.error("Gagal menghapus:", err);
+        alert("Terjadi kesalahan saat menghapus.");
+      }
+    });
+  });
+
+  
     const data = docSnap.data();
     const waktu = data.timestamp?.toDate?.();
     if (waktu >= now && waktu < besok) {
-      daftar.innerHTML += `
+            daftar.innerHTML += `
         <tr>
           <td class="px-4 py-2">${waktu.toLocaleString()}</td>
           <td class="px-4 py-2">${data.namaBarang}</td>
           <td class="px-4 py-2">${data.jumlah}</td>
           <td class="px-4 py-2">${formatRupiah(data.total)}</td>
+          <td class="px-4 py-2">
+            <button class="text-red-600 hover:underline hapus-btn" data-id="${docSnap.id}">Hapus</button>
+          </td>
         </tr>`;
+
       dataExport.push({
         Waktu: waktu.toLocaleString(),
         Barang: data.namaBarang,
