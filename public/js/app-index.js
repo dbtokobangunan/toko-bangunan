@@ -103,14 +103,15 @@ form.addEventListener("submit", async (e) => {
   }
 
   await addDoc(collection(db, "penjualan"), {
-    barangId,
-    namaBarang,
-    jumlah,
-    hargaJual: harga,
-    hargaBeli,
-    total: totalTransaksi,
-    timestamp: Timestamp.now()
-  });
+  barangId,
+  namaBarang,
+  jumlah,
+  harga: harga,            // ✅ harga satuan (diperlukan di laporan penjualan)
+  hargaBeli,
+  total: totalTransaksi,
+  timestamp: Timestamp.now()
+});
+
 
   // Update stok
   const barangRef = doc(db, "barang", barangId);
