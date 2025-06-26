@@ -77,9 +77,10 @@ window.tampilkanLaporan = async function () {
       Tanggal: tanggalStr,
       Barang: data.namaBarang || "-",
       Jumlah: data.jumlah ?? 0,
-      Harga: data.harga ?? 0,
+      Harga: data.hargaJual ?? 0,     // ✅ GUNAKAN hargaJual
       Total: data.total ?? 0
     };
+
     rows.push(row);
 
     const tr = document.createElement("tr");
@@ -88,7 +89,7 @@ window.tampilkanLaporan = async function () {
       <td class="px-4 py-2">${tanggalStr}</td>
       <td class="px-4 py-2">${data.namaBarang ?? "-"}</td>
       <td class="px-4 py-2">${data.jumlah ?? 0}</td>
-      <td class="px-4 py-2">Rp${data.harga ?? 0}</td>
+      <td class="px-4 py-2">Rp${data.hargaJual ?? 0}</td>
       <td class="px-4 py-2">Rp${data.total ?? 0}</td>
     `;
     tabelPenjualan.appendChild(tr);
