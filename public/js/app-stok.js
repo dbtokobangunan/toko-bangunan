@@ -15,33 +15,10 @@ const form = document.getElementById("formStokMasuk");
 const pilihBarang = document.getElementById("pilihBarang");
 const jumlahMasuk = document.getElementById("jumlahMasuk");
 const tbody = document.getElementById("daftarStokMasuk");
-tbody.innerHTML += `
-  <tr>
-    <td class="px-4 py-2">${waktu}</td>
-    <td class="px-4 py-2">${namaBarang}</td>
-    <td class="px-4 py-2">${jumlah}</td>
-  </tr>
-`;
-
-
-// const navBar = document.createElement("nav");
-// navBar.className = "bg-white shadow-md py-4 mb-8";
-// navBar.innerHTML = `
-//   <div class="max-w-7xl mx-auto px-4 flex flex-wrap justify-center gap-4">
-//     <a href="index.html" class="text-blue-600 font-semibold hover:underline">Kasir</a>
-//     <a href="barang.html" class="text-blue-600 font-semibold hover:underline">Data Barang</a>
-//     <a href="penjualan.html" class="text-blue-600 font-semibold hover:underline">Penjualan</a>
-//     <a href="pengeluaran.html" class="text-blue-600 font-semibold hover:underline">Pengeluaran</a>
-//     <a href="profit.html" class="text-blue-600 font-semibold hover:underline">Profit Harian</a>
-//     <a href="profit-bulanan.html" class="text-blue-600 font-semibold hover:underline">Profit Bulanan</a>
-//     <a href="stok.html" class="text-blue-600 font-semibold hover:underline">Stok Masuk</a>
-//   </div>
-// `;
-// document.body.prepend(navBar);
 
 let dataBarang = [];
 
-// Isi dropdown barang dari Firestore
+// Isi combobox barang dari koleksi "barang"
 async function isiDropdownBarang() {
   const querySnapshot = await getDocs(collection(db, "barang"));
   dataBarang = [];
@@ -53,15 +30,16 @@ async function isiDropdownBarang() {
   });
 }
 
-// Simpan stok masuk ke Firestore
+// Submit stok masuk
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const barangId = pilihBarang.value;
   const jumlah = parseInt(jumlahMasuk.value);
   const barang = dataBarang.find(b => b.id === barangId);
 
-  if (!barang) return;
+  if (!barang) return alert("Barang tidak ditemukan!");
 
+  // Simpan ke koleksi "stokMasuk"
   await addDoc(collection(db, "stokMasuk"), {
     barangId,
     namaBarang: barang.nama,
@@ -72,16 +50,17 @@ form.addEventListener("submit", async (e) => {
   // Update stok barang
   const barangRef = doc(db, "barang", barangId);
   await updateDoc(barangRef, {
-    stok: barang.stok + jumlah
+    stok: (barang.stok || 0) + jumlah
   });
 
   form.reset();
-  tampilkanStokMasukHariIni();
+  await tampilkanStokMasukHariIni();
 });
 
-// Tampilkan barang masuk hari ini
+// Tampilkan data stok masuk hari ini
 async function tampilkanStokMasukHariIni() {
-  daftarStokMasuk.innerHTML = "";
+  tbody.innerHTML = "";
+
   const now = new Date();
   const awal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const akhir = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -96,9 +75,14 @@ async function tampilkanStokMasukHariIni() {
   snap.forEach(doc => {
     const data = doc.data();
     const waktu = data.timestamp.toDate().toLocaleTimeString();
-    const li = document.createElement("li");
-    li.textContent = `${waktu} - ${data.namaBarang} +${data.jumlah}`;
-    daftarStokMasuk.appendChild(li);
+
+    tbody.innerHTML += `
+      <tr>
+        <td class="px-4 py-2">${waktu}</td>
+        <td class="px-4 py-2">${data.namaBarang}</td>
+        <td class="px-4 py-2">${data.jumlah}</td>
+      </tr>
+    `;
   });
 }
 
