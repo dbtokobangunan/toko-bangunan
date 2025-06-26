@@ -87,26 +87,26 @@
   </div>
 
   <!-- Tabel Transaksi Hari Ini -->
-  <div class="max-w-6xl mx-auto mt-10 px-4">
-    <div class="bg-white shadow rounded-lg p-6">
-      <h2 class="text-lg font-bold mb-4">Transaksi Hari Ini</h2>
-      <div class="overflow-x-auto">
-        <table class="min-w-full table-auto border text-sm">
-          <thead class="bg-gray-200">
-            <tr>
-              <th class="px-4 py-2">Waktu</th>
-              <th class="px-4 py-2">Barang</th>
-              <th class="px-4 py-2">Jumlah</th>
-              <th class="px-4 py-2">Total</th>
-              <th class="px-4 py-2">Aksi</th>
-            </tr>
-          </thead>
-          <tbody id="daftarTransaksi"></tbody>
-        </table>
-      </div>
-      <button id="btnExport" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hidden">Download Excel</button>
-    </div>
+  <section class="bg-white shadow rounded p-6">
+  <h2 class="text-lg font-semibold mb-4">Transaksi Hari Ini</h2>
+  <div class="overflow-x-auto border rounded">
+    <table class="min-w-full table-auto text-sm">
+      <thead class="bg-gray-200 text-left">
+        <tr>
+          <th class="px-4 py-2">Waktu</th>
+          <th class="px-4 py-2">Barang</th>
+          <th class="px-4 py-2">Jumlah</th>
+          <th class="px-4 py-2">Total</th>
+          <th class="px-4 py-2">Aksi</th>
+        </tr>
+      </thead>
+      <tbody id="daftarTransaksi" class="divide-y divide-gray-100">
+        <!-- Baris data dari JS -->
+      </tbody>
+    </table>
   </div>
+</section>
+
 
   <script>
     let currentInput = "";

@@ -165,22 +165,20 @@ async function tampilkanTransaksiHariIni() {
     });
   });
 
-
+  
     const data = docSnap.data();
     const waktu = data.timestamp?.toDate?.();
     if (waktu >= now && waktu < besok) {
             daftar.innerHTML += `
-  <tr class="hover:bg-gray-50 transition">
-    <td class="px-4 py-2 whitespace-nowrap">${waktu.toLocaleString()}</td>
-    <td class="px-4 py-2">${data.namaBarang}</td>
-    <td class="px-4 py-2 text-center">${data.jumlah}</td>
-    <td class="px-4 py-2 text-right">${formatRupiah(data.total)}</td>
-    <td class="px-4 py-2 text-center">
-      <button class="text-red-600 hover:underline hapus-btn" data-id="${docSnap.id}">Hapus</button>
-    </td>
-  </tr>
-`;
-
+        <tr>
+          <td class="px-4 py-2">${waktu.toLocaleString()}</td>
+          <td class="px-4 py-2">${data.namaBarang}</td>
+          <td class="px-4 py-2">${data.jumlah}</td>
+          <td class="px-4 py-2">${formatRupiah(data.total)}</td>
+          <td class="px-4 py-2">
+            <button class="text-red-600 hover:underline hapus-btn" data-id="${docSnap.id}">Hapus</button>
+          </td>
+        </tr>`;
 
       dataExport.push({
         Waktu: waktu.toLocaleString(),
