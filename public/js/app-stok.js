@@ -18,7 +18,7 @@ const tbody = document.getElementById("daftarStokMasuk");
 
 let dataBarang = [];
 
-// Isi combobox barang dari koleksi "barang"
+// Isi dropdown barang dari Firestore
 async function isiDropdownBarang() {
   const querySnapshot = await getDocs(collection(db, "barang"));
   dataBarang = [];
@@ -30,16 +30,16 @@ async function isiDropdownBarang() {
   });
 }
 
-// Submit stok masuk
+// Simpan stok masuk ke Firestore
 form.addEventListener("submit", async (e) => {
   e.preventDefault();
   const barangId = pilihBarang.value;
   const jumlah = parseInt(jumlahMasuk.value);
   const barang = dataBarang.find(b => b.id === barangId);
 
-  if (!barang) return alert("Barang tidak ditemukan!");
+  if (!barang) return;
 
-  // Simpan ke koleksi "stokMasuk"
+  // Simpan ke koleksi stokMasuk
   await addDoc(collection(db, "stokMasuk"), {
     barangId,
     namaBarang: barang.nama,
@@ -47,20 +47,19 @@ form.addEventListener("submit", async (e) => {
     timestamp: Timestamp.now()
   });
 
-  // Update stok barang
+  // Update stok pada data barang
   const barangRef = doc(db, "barang", barangId);
   await updateDoc(barangRef, {
-    stok: (barang.stok || 0) + jumlah
+    stok: barang.stok + jumlah
   });
 
   form.reset();
-  await tampilkanStokMasukHariIni();
+  tampilkanStokMasukHariIni();
 });
 
-// Tampilkan data stok masuk hari ini
+// Tampilkan barang masuk hari ini
 async function tampilkanStokMasukHariIni() {
   tbody.innerHTML = "";
-
   const now = new Date();
   const awal = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const akhir = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
@@ -86,6 +85,7 @@ async function tampilkanStokMasukHariIni() {
   });
 }
 
+// Saat halaman dimuat
 window.onload = async function () {
   await isiDropdownBarang();
   await tampilkanStokMasukHariIni();
