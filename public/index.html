@@ -87,7 +87,7 @@
   </div>
 
   <!-- Tabel Transaksi Hari Ini -->
-  <section class="bg-white shadow rounded p-6">
+  <div class="max-w-4xl mx-auto mt-10 px-4">
   <h2 class="text-lg font-semibold mb-4">Transaksi Hari Ini</h2>
   <div class="overflow-x-auto border rounded">
     <table class="min-w-full table-auto text-sm">
@@ -97,15 +97,13 @@
           <th class="px-4 py-2">Barang</th>
           <th class="px-4 py-2">Jumlah</th>
           <th class="px-4 py-2">Total</th>
-          <th class="px-4 py-2">Aksi</th>
+          <th class="px-4 py-2 text-center">Aksi</th>
         </tr>
       </thead>
-      <tbody id="daftarTransaksi" class="divide-y divide-gray-100">
-        <!-- Baris data dari JS -->
-      </tbody>
+      <tbody id="daftarTransaksi" class="divide-y divide-gray-100"></tbody>
     </table>
   </div>
-</section>
+</div>
 
 
   <script>
